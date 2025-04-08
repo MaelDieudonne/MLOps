@@ -9,10 +9,11 @@ from src.utils.logger import get_backend_logger
 
 logger = get_backend_logger()
 
+
 class PostgreSQLDatabase:
     def __init__(self, admin=False):
         """
-        Initialize database connection parameters.
+        Initialize database connection parameters
         """
         load_dotenv()
         self.connection_params = {
@@ -28,7 +29,7 @@ class PostgreSQLDatabase:
 
     def connect(self):
         """
-        Establish a connection to the PostgreSQL database.
+        Establish a connection to the PostgreSQL database
         """
         try:
             self.connection = psycopg.connect(**self.connection_params)
@@ -40,7 +41,7 @@ class PostgreSQLDatabase:
 
     def close_connection(self):
         """
-        Close database connection and cursor.
+        Close database connection and cursor
         """
         if self.connection:
             self.cursor.close()
@@ -55,7 +56,7 @@ class PostgreSQLDatabase:
 
     def table_exists(self, table_name):
         """
-        Check if a table exists in the database.
+        Check if a table exists in the database
         """
         try:
             check_query = sql.SQL("""
@@ -74,7 +75,7 @@ class PostgreSQLDatabase:
 
     def create_table(self, table_name, columns):
         """
-        Create a new table in the database.
+        Create a new table in the database
 
         :table_name: Name of the table to create
         :columns: Dictionary of column names and their data types
@@ -97,7 +98,7 @@ class PostgreSQLDatabase:
 
     def drop_table(self, table_name):
         """
-        Drop an existing table from the database.
+        Drop an existing table from the database
         """
         try:
             drop_table_query = sql.SQL("DROP TABLE IF EXISTS {} CASCADE").format(
@@ -112,7 +113,7 @@ class PostgreSQLDatabase:
 
     def backup_table(self, table_name):
         """
-        Backup a table to a Parquet file in the data/backups/ directory.
+        Backup a table to a Parquet file in the data/backups/ directory
         """
         try:
             # Ensure backup directory exists
@@ -137,15 +138,15 @@ class PostgreSQLDatabase:
             logger.error(f"Failed backing up table {table_name}: {error}")
             return None
 
-    
+
 ######################################
 #       Generic data functions       #
 ######################################
 
-    
+
     def insert_data(self, table_name, data):
         """
-        Insert data into a specified table.
+        Insert data into a specified table
 
         :param table_name: Name of the table
         :param data: List of tuples containing row data
@@ -157,7 +158,7 @@ class PostgreSQLDatabase:
             self.cursor.executemany(insert_query, data)
             self.connection.commit()
             prompt = "1 row" if len(data) == 1 else f"{len(data)} rows"
-            logger.info(f"Inserted {prompt} into {table_name}")
+            logger.debug(f"Inserted {prompt} into {table_name}")
         except (Exception, psycopg.Error) as error:
             self.connection.rollback()
             logger.error(f"Failed inserting data: {error}")
@@ -165,7 +166,7 @@ class PostgreSQLDatabase:
 
     def remove_data(self, table_name, condition_column, condition_value):
         """
-        Remove data from a specified table based on a condition.
+        Remove data from a specified table based on a condition
 
         :param table_name: Name of the table
         :param condition_column: Column name for the condition
@@ -179,7 +180,7 @@ class PostgreSQLDatabase:
             row_count = self.cursor.rowcount
             self.connection.commit()
             prompt = "1 row" if row_count == 1 else f"{row_count} rows"
-            logger.info(f"Deleted {prompt} from {table_name} where {condition_column} = {condition_value}")
+            logger.debug(f"Deleted {prompt} from {table_name} where {condition_column} = {condition_value}")
         except (Exception, psycopg.Error) as error:
             self.connection.rollback()
             logger.error(f"Failed deleting data: {error}")
@@ -187,7 +188,7 @@ class PostgreSQLDatabase:
 
     def query_data(self, table_name, columns='*', condition=None):
         """
-        Query data from a specified table.
+        Query data from a specified table
 
         :param table_name: Name of the table
         :param columns: Columns to select (default: all)
@@ -210,7 +211,7 @@ class PostgreSQLDatabase:
                     select_query = sql.SQL("SELECT {} FROM {} WHERE {}").format(
                         sql.SQL(', ').join(sql.Identifier(col) for col in columns),
                         sql.Identifier(table_name),
-                        sql.SQL(condition))            
+                        sql.SQL(condition))
             self.cursor.execute(select_query)
             results = self.cursor.fetchall()
             return results
@@ -219,12 +220,12 @@ class PostgreSQLDatabase:
             logger.error(f"Failed querying data: {error}")
             return []
 
-    
+
 ######################################
 #       Specific data functions       #
 ######################################
 
-            
+
     def upsert_movie_data(self, data):
         try:
             query = sql.SQL("""
@@ -275,7 +276,7 @@ class PostgreSQLDatabase:
 
     def update_sentiment_data(self, data):
         """
-        Insert data into a specified table, updating existing rows if review_id conflicts.
+        Insert data into a specified table, updating existing rows if review_id conflicts
 
         :param table_name: Name of the table
         :param data: List of tuples containing row data
@@ -283,8 +284,6 @@ class PostgreSQLDatabase:
         try:
             self.cursor.execute(sql.SQL("SELECT column_name FROM information_schema.columns WHERE table_name = 'reviews_sentiments' ORDER BY ordinal_position;"))
             columns = [row[0] for row in self.cursor.fetchall()]
-            # columns = [desc[0] for desc in self.cursor.description]  # Get column names dynamically
-            # columns = ['review_id', 'story', 'acting', 'visuals', 'sounds', 'values', 'overall']
             update_assignments = sql.SQL(', ').join(
                 sql.SQL("{} = EXCLUDED.{}").format(sql.Identifier(col), sql.Identifier(col))
                 for col in columns if col != 'review_id')  # Exclude primary key from updates
@@ -309,6 +308,7 @@ class PostgreSQLDatabase:
             query = "UPDATE reviews_raw SET to_process = 0 WHERE review_id = %s"
             self.cursor.execute(query, (review_id,))
             self.connection.commit()
+            logger.debug(f"Reseted indicator for review #{review_id}")
         except (Exception, psycopg.Error) as error:
             self.connection.rollback()
             logger.error(f"Failed resetting process indicator for review #{review_id}: {error}")

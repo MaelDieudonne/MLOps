@@ -1,6 +1,5 @@
-import os
 import pandas as pd
-import s3fs
+import time
 import tqdm
 
 from datetime import datetime
@@ -8,11 +7,14 @@ from src.analysis import GPT
 from src.scrapping import IMDb
 from src.utils.db import PostgreSQLDatabase
 from src.utils.logger import setup_logging, get_backend_logger
+from src.utils.s3 import s3
 
 
 setup_logging()
 logger = get_backend_logger()
-logger.info("Start logging")
+logger.info("Launching main script")
+
+begin_time = time.time()
 
 db = PostgreSQLDatabase()
 db.connect()
@@ -27,7 +29,7 @@ for movie_id in set(movie[0] for movie in db.query_data('movies')):
 
     ###   Scrap movie metadata   ###
 
-    scrapper = IMDb()    
+    scrapper = IMDb()
     movie_scrap_time = datetime.now().strftime("%Y%m%d_%H%M%S")
     movie_title, release_date = scrapper.get_movie(movie_id)
     total_reviews = scrapper.get_number_of_reviews(movie_id)
@@ -53,7 +55,7 @@ for movie_id in set(movie[0] for movie in db.query_data('movies')):
 
         last_scrapping = db.query_data("movies", condition=f"movie_id = '{(movie_id)}'")[0][4]
         time_since_scrapping = (datetime.now() - last_scrapping).seconds
-        
+
         prompt = "No review" if new_reviews == 0 else f"{new_reviews} new reviews"
         logger.info(f"{prompt} published in the last {(time_since_scrapping / 3600):.2F} hours")
 
@@ -146,6 +148,10 @@ else:
             data = [(review_id, *GPT_results)]
             db.update_sentiment_data(data)
             db.reset_indicator(review_id)
+        # Interrupt sentiment analysis if the script is about to have run for 1 hour
+        if time.time() - begin_time > 58 * 60:
+            logger.warning("Sentiment analysis taking too long, aborting...")
+            break
 
 
 ##################################
@@ -154,40 +160,19 @@ else:
 
 logger.info("Backing up...")
 
-# Configuring S3
-S3_ENDPOINT_URL = 'https://' + os.environ['AWS_S3_ENDPOINT']
-fs = s3fs.S3FileSystem(client_kwargs={'endpoint_url': S3_ENDPOINT_URL})
-bucket_name = 'maeldieudonne'
-destination = bucket_name + '/diffusion/'
-
 # Save the tables to parquet
 for table in ['movies', 'reviews_raw', 'reviews_sentiments']:
     db.backup_table(table)
 
-# Check if other save files are present and select the newest
-def get_latest_local_backup(table_name):
-    backup_files = [f for f in os.listdir("data/backups") if f.startswith(table_name)]
-
-    if not backup_files:
-        logger.info(f"No local backup found for {table_name}")
-        return None
-
-    else:
-        latest_backup = max(backup_files, key=lambda f: os.path.getctime(os.path.join("data/backups", f)))
-        file_path = os.path.join("data/backups", latest_backup)
-        return file_path
-
 # Upload the files to S3
+s3 = s3()
 for table in ['movies', 'reviews_raw', 'reviews_sentiments']:
-    file_path = get_latest_local_backup(table)
-
+    file_path = s3.get_latest_local_backup(table)
     if file_path is not None:
-        try:
-            fs.put(file_path, destination, content_type="parquet", encoding="utf-8")
-            os.remove(file_path)
-            logger.info(f"Successfully uploaded {file_path} to {destination}")
-        except Exception as e:
-            logger.error(f"Failed uploading {file_path} to {destination}: {e}")
+        s3.upload_backup(file_path)
+
+# Remove old backups
+s3.clean_backup_directory()
 
 
 db.close_connection()
