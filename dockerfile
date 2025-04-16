@@ -63,15 +63,28 @@ RUN echo "Verifying timezone during build:" && date
 # Set workdir
 WORKDIR /app
 
+# Create the .env file with secrets passed as build arguments
+ARG DB_HOST
+ARG DB_USER
+ARG DB_PASSWORD
+RUN echo "DB_NAME=$DB_NAME" > /app/.env && \
+    echo "DB_HOST=$DB_HOST" >> /app/.env && \
+    echo "DB_USER=$DB_USER" >> /app/.env && \
+    echo "DB_PASSWORD=$DB_PASSWORD" >> /app/.env
+    echo "DB_NAME=$DB_NAME" >> /app/.env && \
+    echo "OPENAI_API_KEY=$OPENAI_API_KEY" >> /app/.env && \
+    echo "AWS_ACCESS_KEY_ID=&AWS_ACCESS_KEY_ID" >> /app/.env && \
+    echo "AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY" >> /app/.env && \
+    echo "AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN" >> /app/.env && \
+    echo "AWS_S3_ENDPOINT=$AWS_S3_ENDPOINT" >> /app/.env && \
+    echo "AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION" >> /app/.env
+
 # Copy Python packages installed by Poetry from builder
 COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
 COPY --from=builder /usr/local/bin/ /usr/local/bin/
 
 # Copy the source code
 COPY . /app/
-
-# Copy a template .env file in the root directory
-COPY ./setup/.env.template /app/.env
 
 # Make the scripts executable
 RUN chmod +x /app/setup/db_init.py /app/scheduler.py /app/main.py /app/streamlit.py
