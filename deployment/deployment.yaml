@@ -1,39 +1,42 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: movies-api-deployment
+  name: streamlit-app-deployment
   labels:
-    app: movies-api
+    app: streamlit-app
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: movies-api
+      app: streamlit-app
   template:
     metadata:
       labels:
-        app: movies-api
+        app: streamlit-app
     spec:
       containers:
-      - name: movies-api
+      - name: streamlit-app
         image: maeldieudonne/mlops:test
         ports:
         - containerPort: 8000
         command: ["/bin/bash", "-c"]
         args:
         - |
-          poetry run python setup/db_init.py && 
-          poetry run python scheduler.py &
-          uvicorn api:app --host 0.0.0.0 --port 8000 --reload
+          poetry run python setup/db_init.py && \
+          poetry run python scheduler.py & \
+          streamlit run /Streamlit/streamlit.py \
+            --server.port 8000 \
+            --server.enableCORS false \
+            --server.enableXsrfProtection false
         livenessProbe:
           httpGet:
-            path: /health
+            path: /
             port: 8000
           initialDelaySeconds: 10
-          periodSeconds: 10
+          periodSeconds: 15
         readinessProbe:
           httpGet:
-            path: /health
+            path: /
             port: 8000
           initialDelaySeconds: 5
           periodSeconds: 10
