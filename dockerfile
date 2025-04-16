@@ -106,6 +106,3 @@ RUN echo "DB_NAME=$DB_NAME" > /app/.env && \
 
 # Make the scripts executable
 RUN chmod +x /app/setup/db_init.py /app/scheduler.py /app/main.py /app/streamlit.py
-
-# Test
-RUN cat /app/.env

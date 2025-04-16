@@ -19,7 +19,7 @@ def test_main_script(movie_id='tt0097874'):
 
     try:
         # Add movie to the db
-        command_add_movie = ['poetry', 'run', 'python', '-m', 'src.utils.manage_movies', '--add', movie_id]
+        command_add_movie = ['poetry', 'run', 'python', '-m', 'src.manage_movies', '--add', movie_id]
         subprocess.run(command_add_movie, check=True)
         
         # Run main script
@@ -28,7 +28,7 @@ def test_main_script(movie_id='tt0097874'):
         full_output = result.stdout + result.stderr
 
         # Remove movie from the db
-        command_remove_movie = ['poetry', 'run', 'python', '-m', 'src.utils.manage_movies', '--remove', movie_id]
+        command_remove_movie = ['poetry', 'run', 'python', '-m', 'src.manage_movies', '--remove', movie_id]
         subprocess.run(command_remove_movie, check=True)
 
         # Identify error messages in the log

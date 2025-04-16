@@ -60,8 +60,8 @@ A `docker-compose.yml` is provided which runs the tracker, the database and the 
 An `.env` file is required, including parameters for the backup on S3 which can be retrieved [here](https://datalab.sspcloud.fr/account/storage) (see `setup/.env.template`; `DB_HOST` must be set to the name of the postgresql service in the `docker-compose`, by default, `db`).
 
 #### With Kubernetes
-Launch a Jupyter or VSCode service **with edit rights**, remove `.user-maeldieudonne` from `DB_HOST` in the `.env` file, then run from the terminal: `kubectl apply -f deployment/`
-***This should be done with github secrets?***
+Launch a Jupyter or VSCode service **with edit rights**, then run from the terminal: `kubectl apply -f deployment/`
+=> .env file is generated when building, `.user-maeldieudonne` must be removed from `DB_HOST` in GitHub secrets.
 - To check running pods: `kubectl get pods`
 - To remove a pod: `kubectl delete pod <podname>`
 - To remove the entire deployment: `kubectl delete deployment movies-api-deployment`
