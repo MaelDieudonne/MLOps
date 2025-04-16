@@ -85,6 +85,13 @@ RUN echo "Verifying timezone during build:" && date
 # Set workdir
 WORKDIR /app
 
+# Copy Python packages installed by Poetry from builder
+COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
+COPY --from=builder /usr/local/bin/ /usr/local/bin/
+
+# Copy the source code
+COPY . /app/
+
 # Create the .env file with secrets passed as build arguments
 RUN echo "DB_NAME=$DB_NAME" > /app/.env && \
     echo "DB_HOST=$DB_HOST" >> /app/.env && \
@@ -97,15 +104,8 @@ RUN echo "DB_NAME=$DB_NAME" > /app/.env && \
     echo "AWS_S3_ENDPOINT=$AWS_S3_ENDPOINT" >> /app/.env && \
     echo "AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION" >> /app/.env
 
-# Test, to delete!
-RUN cat /app/.env
-
-# Copy Python packages installed by Poetry from builder
-COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
-COPY --from=builder /usr/local/bin/ /usr/local/bin/
-
-# Copy the source code
-COPY . /app/
-
 # Make the scripts executable
 RUN chmod +x /app/setup/db_init.py /app/scheduler.py /app/main.py /app/streamlit.py
+
+# Test
+RUN cat /app/.env
