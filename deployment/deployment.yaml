@@ -16,15 +16,24 @@ spec:
     spec:
       containers:
       - name: movies-api
-        image: maeldieudonne/mlops:latest
+        image: maeldieudonne/mlops:test
         ports:
         - containerPort: 8000
         command: ["/bin/bash", "-c"]
         args:
         - |
-          until pg_isready -h db -p 5432; do 
-            echo 'Waiting for database...'; 
-            sleep 5; 
-          done && 
           poetry run python setup/db_init.py && 
-          poetry run python scheduler.py
+          poetry run python scheduler.py &
+          uvicorn api:app --host 0.0.0.0 --port 8000 --reload
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 10

@@ -7,6 +7,10 @@ from src.utils.db import PostgreSQLDatabase
 
 app = FastAPI()
 
+@app.get("/health")
+def health():
+    return {"status": "ok"}
+
 @app.get("/movies/{movie_id}")
 def get_movie(movie_id: str):
     try:

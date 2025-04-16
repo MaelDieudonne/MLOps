@@ -59,6 +59,15 @@ A `docker-compose.yml` is provided which runs the tracker, the database and the 
 
 An `.env` file is required, including parameters for the backup on S3 which can be retrieved [here](https://datalab.sspcloud.fr/account/storage) (see `setup/.env.template`; `DB_HOST` must be set to the name of the postgresql service in the `docker-compose`, by default, `db`).
 
+#### With Kubernetes
+Launch a Jupyter or VSCode service **with edit rights**, then run from the terminal: `kubectl apply -f deployment/`
+
+To check running pods: `kubectl get pods`
+
+To remove a pod: `kubectl delete pod <podname>`
+
+To remove the entire deployment: `kubectl delete deployment streamlit-deployment`
+
 ### Manage movies
 They can be added or removed with `poetry run python -m src.manage_movies --add '<movie_id_1>' '<movie_id_2>' --remove '<movie_id_3>'` (where `<movie_id>` must be retrieved manually from IMDb, e.g., `tt0033467` for [Citizen Kane](https://www.imdb.com/title/tt0033467/?ref_=fn_all_ttl_1)).
 

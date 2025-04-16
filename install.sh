@@ -69,8 +69,8 @@ fi
 
 
 # Create the tables and restoring backup
-python -m setup.db_init
+poetry run python -m setup.db_init
 
 
 # Launch the scheduler
-python scheduler.py &
+poetry run python scheduler.py &
