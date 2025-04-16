@@ -8,8 +8,8 @@ version = "1.1.0"
 description = "This project tracks the reception of movies based on user reviews published on IMDb. It was realised during the Deployment of Data Science Projects course at ENSAE."
 authors = [
   { name = "Maël Dieudonné", email = "mael.dieudonne@ensae.fr" },
-  { name = "Nathan Van Assche" },
-  { name = "Aymeric Perrin" }
+  { name = "Aymeric Perrin" },
+  { name = "Nathan Van Assche" }
 ]
 license = "MIT" 
 readme = "README.md"
@@ -27,6 +27,7 @@ chromedriver-py = ">=135.0.7049.84,<136.0.0.0"
 colorlog = ">=6.9.0,<7.0.0"
 datetime = ">=5.5,<6.0"
 dotenv = ">=0.9.9,<0.10.0"
+fastapi = ">=0.115.12,<0.200.0"
 fastparquet = ">=2024.11.0,<2025.0.0"
 matplotlib = ">=3.10.1,<4.0.0"
 numpy = ">=2.2.4,<3.0.0"

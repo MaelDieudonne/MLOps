@@ -1,4 +1,4 @@
-# Build stage
+### Build stage
 FROM python:3.12-slim AS builder
 
 # Set environment variables for the build
@@ -7,7 +7,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     POETRY_VERSION=2.1.2 \
     DEBIAN_FRONTEND=noninteractive
 
-# Install only build dependencies
+# Install build dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     curl \
@@ -20,14 +20,15 @@ RUN curl -sSL https://install.python-poetry.org | python3 - && \
 # Set workdir
 WORKDIR /app
 
-# Copy only dependency files
+# Copy dependency files
 COPY pyproject.toml poetry.lock* /app/
 
 # Install dependencies
 RUN poetry config virtualenvs.create false && \
     poetry install --no-interaction --no-ansi
 
-# Final stage
+
+### Final stage
 FROM python:3.12-slim
 
 # Set environment variables
@@ -65,9 +66,6 @@ WORKDIR /app
 # Copy Python packages installed by Poetry from builder
 COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
 COPY --from=builder /usr/local/bin/ /usr/local/bin/
-
-# Copy dependency files
-COPY pyproject.toml poetry.lock* /app/
 
 # Copy the source code
 COPY . /app/

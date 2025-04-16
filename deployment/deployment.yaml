@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: movies-api-deployment
+  labels:
+    app: movies-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: movies-api
+  template:
+    metadata:
+      labels:
+        app: movies-api
+    spec:
+      containers:
+      - name: movies-api
+        image: maeldieudonne/mlops:latest
+        ports:
+        - containerPort: 8000
+        command: ["/bin/bash", "-c"]
+        args:
+        - |
+          until pg_isready -h db -p 5432; do 
+            echo 'Waiting for database...'; 
+            sleep 5; 
+          done && 
+          poetry run python setup/db_init.py && 
+          poetry run python scheduler.py

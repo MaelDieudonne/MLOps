@@ -1,0 +1,20 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: movies-api-ingress
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - movie_tracker.lab.sspcloud.fr
+  rules:
+  - host: movie_tracker.lab.sspcloud.fr
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: movies-api-service
+            port:
+              number: 80
