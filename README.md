@@ -68,6 +68,9 @@ Launch a Jupyter or VSCode service **with edit rights**, then run from the termi
 - To access the pod console: `kubectl exec -it <pod_name> -- /bin/sh`
 - To release domain name: `kubectl get ingress -n user-<username>` then `kubectl delete ingress <ingress name> -n user-<username>`
 
+kubectl exec -it movies-api-deployment-56cc565f56-drk9l -- /bin/sh
+
+
 ### Manage movies
 They can be added or removed with `poetry run python -m src.manage_movies --add '<movie_id_1>' '<movie_id_2>' --remove '<movie_id_3>'` (where `<movie_id>` must be retrieved manually from IMDb, e.g., `tt0033467` for [Citizen Kane](https://www.imdb.com/title/tt0033467/?ref_=fn_all_ttl_1)).
 
