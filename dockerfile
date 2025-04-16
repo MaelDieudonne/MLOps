@@ -1,6 +1,17 @@
 ### Build stage
 FROM python:3.12-slim AS builder
 
+ARG DB_HOST
+ARG DB_USER
+ARG DB_PASSWORD
+ARG DB_NAME
+ARG OPENAI_API_KEY
+ARG AWS_ACCESS_KEY_ID
+ARG AWS_SECRET_ACCESS_KEY
+ARG AWS_SESSION_TOKEN
+ARG AWS_S3_ENDPOINT
+ARG AWS_DEFAULT_REGION
+
 # Set environment variables for the build
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
@@ -30,6 +41,17 @@ RUN poetry config virtualenvs.create false && \
 
 ### Final stage
 FROM python:3.12-slim
+
+ARG DB_HOST
+ARG DB_USER
+ARG DB_PASSWORD
+ARG DB_NAME
+ARG OPENAI_API_KEY
+ARG AWS_ACCESS_KEY_ID
+ARG AWS_SECRET_ACCESS_KEY
+ARG AWS_SESSION_TOKEN
+ARG AWS_S3_ENDPOINT
+ARG AWS_DEFAULT_REGION
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -64,17 +86,6 @@ RUN echo "Verifying timezone during build:" && date
 WORKDIR /app
 
 # Create the .env file with secrets passed as build arguments
-ARG DB_HOST
-ARG DB_USER
-ARG DB_PASSWORD
-ARG DB_NAME
-ARG OPENAI_API_KEY
-ARG AWS_ACCESS_KEY_ID
-ARG AWS_SECRET_ACCESS_KEY
-ARG AWS_SESSION_TOKEN
-ARG AWS_S3_ENDPOINT
-ARG AWS_DEFAULT_REGION
-
 RUN echo "DB_NAME=$DB_NAME" > /app/.env && \
     echo "DB_HOST=$DB_HOST" >> /app/.env && \
     echo "DB_USER=$DB_USER" >> /app/.env && \
@@ -85,6 +96,9 @@ RUN echo "DB_NAME=$DB_NAME" > /app/.env && \
     echo "AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN" >> /app/.env && \
     echo "AWS_S3_ENDPOINT=$AWS_S3_ENDPOINT" >> /app/.env && \
     echo "AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION" >> /app/.env
+
+# Test, to delete!
+RUN cat /app/.env
 
 # Copy Python packages installed by Poetry from builder
 COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
