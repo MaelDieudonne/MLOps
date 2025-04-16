@@ -11,16 +11,34 @@ logger = get_backend_logger()
 
 
 class PostgreSQLDatabase:
-    def __init__(self, admin=False):
+    def __init__(self):
         """
         Initialize database connection parameters
         """
-        load_dotenv()
+        # Look for variables in the environment
+        db_host = os.environ.get('DB_HOST')
+        db_user = os.environ.get('DB_USER')
+        db_password = os.environ.get('DB_PASSWORD')
+        db_name = os.environ.get('DB_NAME')
+
+        if not all([db_host, db_name, db_user, db_password]):
+            # Fall back on the .env file
+            logger.warning("db credentials not found in the environment, trying to load the .env file")
+            try:
+                load_dotenv()
+                db_host = os.getenv('DB_HOST')
+                db_user = os.getenv('DB_USER')
+                db_password = os.getenv('DB_PASSWORD')
+                db_name = os.getenv('DB_NAME')
+                logger.debug("db credentials loaded from .env file")
+            except Exception as e:
+                logger.error(f"Failed to load db credentials from .env file: {e}")
+
         self.connection_params = {
-            'dbname': os.getenv('DB_NAME'),
-            'user': os.getenv('DB_ADMIN_USER') if admin else os.getenv('DB_USER'),
-            'password': os.getenv('DB_ADMIN_PASSWORD') if admin else os.getenv('DB_PASSWORD'),
-            'host': os.getenv('DB_HOST'),
+            'host': db_host,
+            'dbname': db_name,
+            'user': db_user,
+            'password': db_password,
             'port': 5432
         }
         self.connection = None
