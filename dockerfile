@@ -67,13 +67,20 @@ WORKDIR /app
 ARG DB_HOST
 ARG DB_USER
 ARG DB_PASSWORD
+ARG DB_NAME
+ARG OPENAI_API_KEY
+ARG AWS_ACCESS_KEY_ID
+ARG AWS_SECRET_ACCESS_KEY
+ARG AWS_SESSION_TOKEN
+ARG AWS_S3_ENDPOINT
+ARG AWS_DEFAULT_REGION
+
 RUN echo "DB_NAME=$DB_NAME" > /app/.env && \
     echo "DB_HOST=$DB_HOST" >> /app/.env && \
     echo "DB_USER=$DB_USER" >> /app/.env && \
-    echo "DB_PASSWORD=$DB_PASSWORD" >> /app/.env
-    echo "DB_NAME=$DB_NAME" >> /app/.env && \
+    echo "DB_PASSWORD=$DB_PASSWORD" >> /app/.env && \
     echo "OPENAI_API_KEY=$OPENAI_API_KEY" >> /app/.env && \
-    echo "AWS_ACCESS_KEY_ID=&AWS_ACCESS_KEY_ID" >> /app/.env && \
+    echo "AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID" >> /app/.env && \
     echo "AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY" >> /app/.env && \
     echo "AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN" >> /app/.env && \
     echo "AWS_S3_ENDPOINT=$AWS_S3_ENDPOINT" >> /app/.env && \
