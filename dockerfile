@@ -104,5 +104,8 @@ RUN echo "DB_NAME=$DB_NAME" > /app/.env && \
     echo "AWS_S3_ENDPOINT=$AWS_S3_ENDPOINT" >> /app/.env && \
     echo "AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION" >> /app/.env
 
+# Verify the .env file
+RUN cat /app/.env
+
 # Make the scripts executable
-RUN chmod +x /app/setup/db_init.py /app/scheduler.py /app/main.py /app/ api.py /app/Streamlit/streamlit.py
+RUN chmod +x /app/setup/db_init.py /app/scheduler.py /app/main.py /app/api.py /app/Streamlit/streamlit.py
