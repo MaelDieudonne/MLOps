@@ -18,7 +18,7 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build \
+          docker build --no-cache \
             --build-arg DB_NAME=${{ secrets.DB_NAME }} \
             --build-arg DB_USER=${{ secrets.DB_USER }} \
             --build-arg DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
