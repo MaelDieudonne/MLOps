@@ -22,9 +22,12 @@ spec:
         command: ["/bin/bash", "-c"]
         args:
         - |
-          poetry run python -m setup.db_init && 
+          poetry run python -m setup.db_init &&
           poetry run python scheduler.py &
           uvicorn api:app --host 0.0.0.0 --port 8000 --reload
+        envFrom:
+        - secretRef:
+            name: app-credentials
         livenessProbe:
           httpGet:
             path: /health

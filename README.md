@@ -48,9 +48,8 @@ Launch a Postgresql service, then create an `.env` file with the corresponding p
 Launch the installation script with `chmod +x ./install.sh && source ./install.sh`. This script:
 1. Installs Chrome
 2. Installs Python and dependencies with Poetry
-3. Checks if credentials are present
-4. Sets up the database
-5. Launches the scheduler
+3. Sets up the database
+4. Launches the scheduler
 
 The state of the scheduler can be checked with `pgrep -fl scheduler.py`.
 
@@ -60,16 +59,16 @@ A `docker-compose.yml` is provided which runs the tracker, the database and the 
 An `.env` file is required, including parameters for the backup on S3 which can be retrieved [here](https://datalab.sspcloud.fr/account/storage) (see `setup/.env.template`; `DB_HOST` must be set to the name of the postgresql service in the `docker-compose`, by default, `db`).
 
 #### With Kubernetes
-Launch a Jupyter or VSCode service **with edit rights**, then run from the terminal: `kubectl apply -f deployment/`
-=> .env file is generated when building, `.user-maeldieudonne` must be removed from `DB_HOST` in GitHub secrets.
+- Store the credentials in a Vault in the DataLab
+- Launch a Jupyter or VSCode service **with edit rights** and **access to the vault**
+- Run `chmod +x ./create-secrets.sh && source ./create-secrets.sh` to register the credentials in the Kubernetes environment
+- Run `kubectl apply -f deployment/` to deploy the pod
+
+Some usefull commands:
 - To check running pods: `kubectl get pods`
-- To remove a pod: `kubectl delete pod <podname>`
-- To remove the entire deployment: `kubectl delete deployment movies-api-deployment`
-- To access the pod console: `kubectl exec -it <pod_name> -- /bin/sh`
-- To release domain name: `kubectl get ingress -n user-<username>` then `kubectl delete ingress <ingress name> -n user-<username>`
-
-kubectl exec -it movies-api-deployment-56cc565f56-drk9l -- /bin/sh
-
+- To remove the deployment: `kubectl delete deployment <deployment-name>` (removing the pod alone is useless as it keeps restarting)
+- To release the domain name: `kubectl get ingress -n user-<user-name>` to get the `ingress-name`, then `kubectl delete ingress <ingress-name> -n user-<user-name>`
+- To access the pod console: `kubectl exec -it <pod-name> -- /bin/sh` (then e.g. `poetry run pytest` to run tests)
 
 ### Manage movies
 They can be added or removed with `poetry run python -m src.manage_movies --add '<movie_id_1>' '<movie_id_2>' --remove '<movie_id_3>'` (where `<movie_id>` must be retrieved manually from IMDb, e.g., `tt0033467` for [Citizen Kane](https://www.imdb.com/title/tt0033467/?ref_=fn_all_ttl_1)).
