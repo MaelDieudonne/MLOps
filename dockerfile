@@ -29,9 +29,10 @@ RUN curl -sSL https://install.python-poetry.org | python3 - && \
 
 # Set work directory
 WORKDIR /app
+ENV PYTHONPATH=/app
 
 # Copy dependency files first for caching
-COPY pyproject.toml poetry.lock* /app/
+COPY pyproject.toml poetry.lock* README.md /app/
 
 # Install dependencies (let Poetry create a virtualenv)
 RUN poetry config virtualenvs.create false && \

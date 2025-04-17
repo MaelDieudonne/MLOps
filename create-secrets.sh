@@ -5,7 +5,7 @@
 # This script will create a generic secret named "app-credentials".
 
 # Define the name of the Kubernetes Secret
-SECRET_NAME="app-credentials"
+SECRET_NAME="movie-reviews-tracker-credentials"
 
 # Array of key-value pairs for the secret.
 # The key will be the name in the secret, and the value will be

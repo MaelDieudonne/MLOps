@@ -1,33 +1,33 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: movies-api-deployment
+  name: movie-reviews-tracker-deployment
   labels:
-    app: movies-api
+    app: movie-reviews-tracker
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: movies-api
+      app: movie-reviews-tracker
   template:
     metadata:
       labels:
-        app: movies-api
+        app: movie-reviews-tracker
     spec:
       containers:
-      - name: movies-api
+      - name: movie-reviews-tracker
         image: maeldieudonne/mlops:test
         ports:
         - containerPort: 8000
         command: ["/bin/bash", "-c"]
         args:
         - |
-          poetry run python -m setup.db_init &&
-          poetry run python scheduler.py &
-          uvicorn api:app --host 0.0.0.0 --port 8000 --reload
+          python -m setup.db_init &&
+          python scheduler.py &
+          uvicorn api:app --host 0.0.0.0 --port 8000
         envFrom:
         - secretRef:
-            name: app-credentials
+            name: movie-reviews-tracker-credentials
         livenessProbe:
           httpGet:
             path: /health

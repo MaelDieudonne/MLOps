@@ -1,3 +1,4 @@
+import os
 import pytest
 import re
 import subprocess
@@ -11,15 +12,26 @@ LOG_TIMESTAMP_FORMAT = "%Y-%m-%d %H:%M:%S,%f"
 ANSI_ESCAPE = re.compile(r'\x1b\[[0-9;]*m')
 
 
+def is_poetry_managed():
+    return os.getenv('POETRY_ACTIVE') is not None
+
+
 def test_main_script(movie_id='tt0097874'):
     """Tests that main.py runs successfully and produces no errors in its log entries after the test starts, for a given movie."""
     test_start_time = datetime.now()
     test_start_time_str = test_start_time.strftime(LOG_TIMESTAMP_FORMAT)
     print(f"Test started at: {test_start_time_str} for movie_id: {movie_id}")
 
+    if is_poetry_managed():
+        base_command = ['python']
+        print("Launching commands without poetry")
+    else:
+        base_command = ['poetry', 'run', 'python']
+        print("Launching commands with poetry")
+
     try:
         # Add movie to the db
-        command_add_movie = ['poetry', 'run', 'python', '-m', 'src.manage_movies', '--add', movie_id]
+        command_add_movie = base_command + ['-m', 'src.manage_movies', '--add', movie_id]
         subprocess.run(command_add_movie, check=True)
         
         # Run main script

@@ -1,20 +1,20 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: movies-api-ingress
+  name: movie-reviews-tracker-ingress
 spec:
   ingressClassName: nginx
   tls:
   - hosts:
-    - movie-tracker.lab.sspcloud.fr
+    - movie-reviews-tracker.lab.sspcloud.fr
   rules:
-  - host: movie-tracker.lab.sspcloud.fr
+  - host: movie-reviews-tracker.lab.sspcloud.fr
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: movies-api-service
+            name: movie-reviews-tracker-service
             port:
               number: 80

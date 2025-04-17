@@ -9,7 +9,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    steps:
+    steps:        
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -18,7 +18,7 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build --no-cache \
+          docker build --no-cache --pull \
             --build-arg DB_NAME=${{ secrets.DB_NAME }} \
             --build-arg DB_USER=${{ secrets.DB_USER }} \
             --build-arg DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
