@@ -38,6 +38,10 @@ app/
 └── scheduler.py</pre>
 
 ### Installation
+NB: from an instance with edit/admin right, the db can be launched with `helm repo add databases https://inseefrlab.github.io/helm-charts-databases && helm install postgresql-306275 databases/postgresql -f postgresql.yaml` (where `postgresql.yaml` is located in the root directory of the project and specifies the db parameters).
+
+=> *Write that as a script to generate the db id_number and password dynamically, and pass them to the environment. The Vault would only be necessary for the OpenAI token then.*
+
 #### In the DataLab (for backend)
 Launch a Postgresql service, then create an `.env` file with the corresponding parameters:
 - DB_NAME=

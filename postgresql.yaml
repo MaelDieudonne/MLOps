@@ -1,0 +1,37 @@
+postgresql:
+  image:
+    tag: "16"
+  primary:
+    persistence:
+      enabled: true
+      size: 10Gi
+    resources:
+      requests:
+        cpu: 250m
+        memory: 1Gi
+      limits:
+        cpu: 30000m
+        memory: 50Gi
+  auth:
+    postgresPassword: CJLxecqiWq55SXQwHUj3
+    username: MLOps-user
+    password: 2gcdxwzJsRZv858twwd5
+    database: MLOps-db
+  extensions:
+    postgis: false
+security:
+  networkPolicy:
+    enabled: true
+    from:
+      - ipBlock:
+          cidr: 10.233.103.0/32
+      - ipBlock:
+          cidr: 10.233.111.0/32
+      - ipBlock:
+          cidr: 10.233.116.0/32
+      - ipBlock:
+          cidr: 10.233.108.0/32
+discovery:
+  enabled: true
+userPreferences:
+  language: fr
