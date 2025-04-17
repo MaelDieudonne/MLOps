@@ -16,20 +16,13 @@ jobs:
       - name: Login to DockerHub
         run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
+      - name: Remove existing Docker image (if any)
+        run: docker rmi -f maeldieudonne/mlops:test || true
+
       - name: Build Docker image
         run: |
           docker build --no-cache --pull \
-            --build-arg DB_NAME=${{ secrets.DB_NAME }} \
-            --build-arg DB_USER=${{ secrets.DB_USER }} \
-            --build-arg DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
-            --build-arg DB_HOST=${{ secrets.DB_HOST }} \
-            --build-arg OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} \
-            --build-arg AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
-            --build-arg AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
-            --build-arg AWS_SESSION_TOKEN=${{ secrets.AWS_SESSION_TOKEN }} \
-            --build-arg AWS_S3_ENDPOINT=${{ secrets.AWS_S3_ENDPOINT }} \
-            --build-arg AWS_DEFAULT_REGION=${{ secrets.AWS_DEFAULT_REGION }} \
-            -t maeldieudonne/mlops:test .
+            -t maeldieudonne/mlops:${{ env.IMAGE_TAG }} .
 
       - name: Push Docker image
-        run: docker push maeldieudonne/mlops:test
+        run: docker push maeldieudonne/mlops:${{ env.IMAGE_TAG }}
