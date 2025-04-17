@@ -38,7 +38,7 @@ app/
 └── scheduler.py</pre>
 
 ### Installation
-#### In the DataLab
+#### In the DataLab (for backend)
 Launch a Postgresql service, then create an `.env` file with the corresponding parameters:
 - DB_NAME=
 - DB_USER=
@@ -69,7 +69,7 @@ Some usefull commands:
 - To remove the deployment: `kubectl delete deployment <deployment-name>` (removing the pod alone is useless as it keeps restarting)
 - To release the domain name: `kubectl get ingress -n user-<user-name>` to get the `ingress-name`, then `kubectl delete ingress <ingress-name>`
 - To inspect secrets: `kubectl get secret` / `kubectl get secret <secret-name> -o yaml` / `kubectl delete secret <secret-name>`
-- To access the pod console: `kubectl exec -it <pod-name> -- /bin/sh` (then e.g. `poetry run pytest` to run tests)
+- To access the pod console: `kubectl exec -it <pod-name> -- /bin/sh` (then e.g. `pytest` to run tests)
 
 ### Manage movies
 They can be added or removed with `poetry run python -m src.manage_movies --add '<movie_id_1>' '<movie_id_2>' --remove '<movie_id_3>'` (where `<movie_id>` must be retrieved manually from IMDb, e.g., `tt0033467` for [Citizen Kane](https://www.imdb.com/title/tt0033467/?ref_=fn_all_ttl_1)).
