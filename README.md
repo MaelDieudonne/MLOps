@@ -75,6 +75,7 @@ An `.env` file is required, including parameters for the backup on S3 which can 
 - Run `chmod +x ./setup/create_kubectl_secrets.sh && source ./setup/create_kubectl_secrets.sh` to register the credentials in the Kubernetes environment
 - Run `kubectl apply -f deployment/` to deploy the pod
 
+
 Some usefull commands:
 - To check running pods: `kubectl get pods`
 - To remove the deployment: `kubectl delete deployment <deployment-name>` (removing the pod alone is useless as it keeps restarting)

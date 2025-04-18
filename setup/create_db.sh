@@ -71,3 +71,24 @@ done
 if [ $attempt -gt $max_attempts ]; then
     echo "❌ All ${max_attempts} attempts failed."
 fi
+
+echo "Adding environment variables to ~/.bashrc..."
+if [ -f "$HOME/.bashrc" ]; then
+    echo "export DB_NAME=\"$DB_NAME\"" >> ~/.bashrc
+    echo "export DB_USER=\"$DB_USER\"" >> ~/.bashrc
+    echo "export DB_PASSWORD=\"$DB_PASSWORD\"" >> ~/.bashrc
+    echo "export DB_ADMIN_PASSWORD=\"$DB_ADMIN_PASSWORD\"" >> ~/.bashrc
+    echo "export DB_HOST=\"$DB_HOST\"" >> ~/.bashrc
+    source ~/.bashrc  # Reload the shell configuration to apply changes
+elif [ -f "$HOME/.zshrc" ]; then
+    echo "export DB_NAME=\"$DB_NAME\"" >> ~/.zshrc
+    echo "export DB_USER=\"$DB_USER\"" >> ~/.zshrc
+    echo "export DB_PASSWORD=\"$DB_PASSWORD\"" >> ~/.zshrc
+    echo "export DB_ADMIN_PASSWORD=\"$DB_ADMIN_PASSWORD\"" >> ~/.zshrc
+    echo "export DB_HOST=\"$DB_HOST\"" >> ~/.zshrc
+    source ~/.zshrc  # Reload the shell configuration to apply changes
+else
+    echo "No suitable shell configuration file found. Environment variables were not saved permanently."
+fi
+
+echo "Environment variables set and saved to your shell config."
