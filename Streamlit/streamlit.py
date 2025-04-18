@@ -4,8 +4,13 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from scipy.interpolate import CubicSpline
 from scipy.signal import savgol_filter
+from src.utils.db import PostgreSQLDatabase
 
 st.set_page_config(layout="wide")
+
+movie_id = "tt6208148"
+with PostgreSQLDatabase() as db:
+    movie_data = db.query_data("movies", condition=f"movie_id = '{movie_id}'")
 
 # Ajouter du CSS personnalisé
 st.markdown("""
@@ -53,7 +58,7 @@ with main_col1:
         width=330)
 
 with main_col2:
-    st.subheader("Nom du Film : Blanche Neige")
+    st.subheader("Nom du Film : "+movie_data[0][1]+"??")
     st.write("Date de sortie : 2025")
     st.write("Auteur : Rachel Zegler, Emilia Faucher")
 
