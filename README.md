@@ -42,14 +42,7 @@ app/
 └── scheduler.py</pre>
 
 ### Installation
-There are scripts doing most of the work... Main difficulty is the transmission of credentials between different environments.
-
-NB: from an instance with edit/admin right, the db can be launched with `helm repo add databases https://inseefrlab.github.io/helm-charts-databases && helm install postgresql-306275 databases/postgresql -f postgresql.yaml` (where `postgresql.yaml` is located in the root directory of the project and specifies the db parameters).
-
-=> *Script to generate the db id_number and password dynamically, and pass them to the environment: `chmod +x ./setup/create_db.sh && source ./setup/create_db.sh`. The Vault would only be necessary for the OpenAI token then.*
-=> To remove the pods thus created: `kubectl delete statefulset postgresql-<id_number>`.
-
-#### In the DataLab (for backend)
+#### In the DataLab (for developpement)
 Launch a Postgresql service, then store the corresponding parameters in an `.env` file or a Datalab Vault :
 - DB_NAME=
 - DB_USER=
@@ -64,17 +57,13 @@ Launch the installation script with `chmod +x ./setup/install_dependencies.sh &&
 
 The state of the scheduler can be checked with `pgrep -fl scheduler.py`.
 
-#### With Docker
-A `docker-compose.yml` is provided which runs the tracker, the database and the dashboard as distinct services.
-
-An `.env` file is required, including parameters for the backup on S3 which can be retrieved [here](https://datalab.sspcloud.fr/account/storage) (see `setup/.env.template`; `DB_HOST` must be set to the name of the postgresql service in the `docker-compose`, by default, `db`).
-
 #### With Kubernetes
-- Store the credentials in a Vault in the DataLab
+The main difficulty is the transmission of credentials between different environments...
+- Store the OPENAI_API_KEY in a Vault in the DataLab
 - Launch a Jupyter or VSCode service **with edit rights** and **access to the vault**
+- Run `chmod +x ./setup/create_db.sh && source ./setup/create_db.sh` to launch a PostgrelSQL pod
 - Run `chmod +x ./setup/create_kubectl_secrets.sh && source ./setup/create_kubectl_secrets.sh` to register the credentials in the Kubernetes environment
-- Run `kubectl apply -f deployment/` to deploy the pod
-
+- Run `kubectl apply -f deployment/` to deploy the app
 
 Some usefull commands:
 - To check running pods: `kubectl get pods`
@@ -82,9 +71,13 @@ Some usefull commands:
 - To release the domain name: `kubectl get ingress` / `kubectl delete ingress <ingress-name>`
 - To inspect secrets: `kubectl get secret` / `kubectl get secret <secret-name> -o yaml` / `kubectl delete secret <secret-name>`
 - To access the pod console: `kubectl exec -it <pod-name> -- /bin/sh` (then e.g. `pytest` to run tests)
+- To remove the databse: `kubectl delete statefulset postgresql-<id_number>`
+
+#### With Docker
+A `docker-compose.yml` is provided which runs the tracker, the database and the dashboard as distinct services. The secrets must be set as environment variables, including parameters for the backup on S3 which can be retrieved [here](https://datalab.sspcloud.fr/account/storage).
 
 ### Manage movies
-They can be added or removed with `poetry run python -m src.manage_movies --add '<movie_id_1>' '<movie_id_2>' --remove '<movie_id_3>'` (where `<movie_id>` must be retrieved manually from IMDb, e.g., `tt0033467` for [Citizen Kane](https://www.imdb.com/title/tt0033467/?ref_=fn_all_ttl_1)).
+They can be added or removed with `poetry run python -m src.manage_movies --add '<movie_id_1>' '<movie_id_2>' --remove '<movie_id_3>'` (where `<movie_id>` must be retrieved manually from IMDb, e.g., `tt0033467` for [Citizen Kane](https://www.imdb.com/title/tt0033467/?ref_=fn_all_ttl_1)) (in Docker / Kubernetes, skip `poetry run`).
 
 ## 2. Technical aspects
 
