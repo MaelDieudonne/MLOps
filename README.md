@@ -46,7 +46,7 @@ There are scripts doing most of the work... Main difficulty is the transmission 
 
 NB: from an instance with edit/admin right, the db can be launched with `helm repo add databases https://inseefrlab.github.io/helm-charts-databases && helm install postgresql-306275 databases/postgresql -f postgresql.yaml` (where `postgresql.yaml` is located in the root directory of the project and specifies the db parameters).
 
-=> *Write that as a script to generate the db id_number and password dynamically, and pass them to the environment. The Vault would only be necessary for the OpenAI token then.*
+=> *Script to generate the db id_number and password dynamically, and pass them to the environment: `chmod +x ./setup/create_db.sh && source ./setup/create_db.sh`. The Vault would only be necessary for the OpenAI token then.*
 => To remove the pods thus created: `kubectl delete statefulset postgresql-<id_number>`.
 
 #### In the DataLab (for backend)

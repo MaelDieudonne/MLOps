@@ -59,7 +59,7 @@ while [ $attempt -le $max_attempts ]; do
 
     echo "Attempt $attempt: Trying DB_HOST=${DB_HOST}..."
 
-    if helm install "${DB_HOST}" databases/postgresql -f; then
+    if helm install "${DB_HOST}" databases/postgresql -f values.yaml; then
         echo "✅ PostgreSQL installed successfully at ${DB_HOST}"
         break
     else
@@ -69,6 +69,5 @@ while [ $attempt -le $max_attempts ]; do
 done
 
 if [ $attempt -gt $max_attempts ]; then
-    echo "❌ All ${max_attempts} attempts failed. Exiting."
-    exit 1
+    echo "❌ All ${max_attempts} attempts failed."
 fi
