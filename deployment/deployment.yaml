@@ -24,7 +24,7 @@ spec:
         - |
           python -m setup.db_init &&
           python scheduler.py &
-          streamlit run streamlit.py \
+          streamlit run dashboard.py \
             --server.port 8000 \
             --server.enableCORS false \
             --server.enableXsrfProtection false
