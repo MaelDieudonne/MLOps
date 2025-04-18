@@ -6,9 +6,9 @@ spec:
   ingressClassName: nginx
   tls:
   - hosts:
-    - movie-reviews-trackerap.lab.sspcloud.fr
+    - movie-reviews-trackerap2.lab.sspcloud.fr
   rules:
-  - host: movie-reviews-trackerap.lab.sspcloud.fr
+  - host: movie-reviews-trackerap2.lab.sspcloud.fr
     http:
       paths:
       - path: /
