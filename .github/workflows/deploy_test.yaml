@@ -22,7 +22,7 @@ jobs:
       - name: Build Docker image
         run: |
           docker build --no-cache --pull \
-            -t maeldieudonne/mlops:test .
+            -t maeldieudonne/mlops:testap .
 
       - name: Push Docker image
         run: docker push maeldieudonne/mlops:testap
