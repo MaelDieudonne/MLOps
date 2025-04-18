@@ -1,9 +1,5 @@
 #!/bin/bash
 
-# Script to generate a Kubernetes Secret from environment variables.
-# These environment variables are expected to be set in your current shell.
-# This script will create a generic secret named "app-credentials".
-
 # Define the name of the Kubernetes Secret
 SECRET_NAME="movie-reviews-tracker-credentials"
 

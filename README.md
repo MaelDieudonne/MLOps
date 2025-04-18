@@ -20,8 +20,10 @@ app/
 ├── logs/
 ├── notebooks/
 ├── setup/
-│   ├── .env.template
-│   └── db_init.py
+│   ├── create_db.sh
+│   ├── create_kubectl_secrets.sh
+│   ├── db_init.py
+│   └── install_dependencies.py
 ├── src/
 │   ├── analysis.py
 │   ├── backup.py
@@ -34,25 +36,30 @@ app/
 ├── test/
 │       ├── backup_test.py
 │       └── connection_test.py
+├── streamlit
+│       └── connection_test.py
 ├── main.py
 └── scheduler.py</pre>
 
 ### Installation
+There are scripts doing most of the work... Main difficulty is the transmission of credentials between different environments.
+
 NB: from an instance with edit/admin right, the db can be launched with `helm repo add databases https://inseefrlab.github.io/helm-charts-databases && helm install postgresql-306275 databases/postgresql -f postgresql.yaml` (where `postgresql.yaml` is located in the root directory of the project and specifies the db parameters).
 
 => *Write that as a script to generate the db id_number and password dynamically, and pass them to the environment. The Vault would only be necessary for the OpenAI token then.*
+=> To remove the pods thus created: `kubectl delete statefulset postgresql-<id_number>`.
 
 #### In the DataLab (for backend)
-Launch a Postgresql service, then create an `.env` file with the corresponding parameters:
+Launch a Postgresql service, then store the corresponding parameters in an `.env` file or a Datalab Vault :
 - DB_NAME=
 - DB_USER=
 - DB_PASSWORD=
 - DB_HOST=
 
-Launch the installation script with `chmod +x ./install.sh && source ./install.sh`. This script:
+Launch the installation script with `chmod +x ./setup/install_dependencies.sh && source ./setup/install_dependencies.sh`. This script:
 1. Installs Chrome
 2. Installs Python and dependencies with Poetry
-3. Sets up the database
+3. Sets up the database (with `setup/db_init.py`)
 4. Launches the scheduler
 
 The state of the scheduler can be checked with `pgrep -fl scheduler.py`.
@@ -65,7 +72,7 @@ An `.env` file is required, including parameters for the backup on S3 which can 
 #### With Kubernetes
 - Store the credentials in a Vault in the DataLab
 - Launch a Jupyter or VSCode service **with edit rights** and **access to the vault**
-- Run `chmod +x ./create-secrets.sh && source ./create-secrets.sh` to register the credentials in the Kubernetes environment
+- Run `chmod +x ./setup/create_kubectl_secrets.sh && source ./setup/create_kubectl_secrets.sh` to register the credentials in the Kubernetes environment
 - Run `kubectl apply -f deployment/` to deploy the pod
 
 Some usefull commands:
