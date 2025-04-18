@@ -58,7 +58,7 @@ with main_col1:
         width=330)
 
 with main_col2:
-    st.subheader("Nom du Film : "+movie_data[0][1]+"??")
+    st.subheader("Nom du Film : "+movie_data[0][1]+"???")
     st.write("Date de sortie : 2025")
     st.write("Auteur : Rachel Zegler, Emilia Faucher")
 
