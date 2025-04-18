@@ -59,7 +59,7 @@ with main_col1:
 
 with main_col2:
     st.subheader("Movie name : "+movie_data[0][1])
-    st.write("Release date : "+movie_data[0][2].year)
+    st.write("Release date : "+str(movie_data[0][2].year))
     st.write("Filmmaker : Rachel Zegler, Emilia Faucher")
 
 # Deuxième ligne : colonnes vides et colonnes principales
