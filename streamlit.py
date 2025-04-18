@@ -8,10 +8,6 @@ from src.utils.db import PostgreSQLDatabase
 
 st.set_page_config(layout="wide")
 
-movie_id = "tt6208148"
-with PostgreSQLDatabase() as db:
-    movie_data = db.query_data("movies", condition=f"movie_id = '{movie_id}'")
-
 # Ajouter du CSS personnalisé
 st.markdown("""
     <style>
@@ -56,6 +52,10 @@ with main_col1:
     st.image(
         "https://m.media-amazon.com/images/M/MV5BNWNlNTVkMWEtMDkxNC00YTJhLTllOTMtN2FlN2M0YTViMjg0XkEyXkFqcGc@._V1_QL75_UY74_CR5",
         width=330)
+
+movie_id = "tt6208148"
+with PostgreSQLDatabase() as db:
+    movie_data = db.query_data("movies", condition=f"movie_id = '{movie_id}'")
 
 with main_col2:
     st.subheader("Nom du Film : "+movie_data[0][1]+"??")
