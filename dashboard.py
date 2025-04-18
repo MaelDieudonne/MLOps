@@ -8,6 +8,10 @@ from src.utils.db import PostgreSQLDatabase
 
 st.set_page_config(layout="wide")
 
+movie_id = "tt6208148"
+with PostgreSQLDatabase() as db:
+    movie_data = db.query_data("movies", condition=f"movie_id = '{movie_id}'")
+
 # Ajouter du CSS personnalisé
 st.markdown("""
     <style>
@@ -41,7 +45,7 @@ st.markdown("""
 
 empty_col1, title_col, empty_col2 = st.columns([2, 12, 2])  # Colonnes avec marges vides
 with title_col:
-    st.title("Blanche Neige")
+    st.title(movie_data[0][1])
 
 # Ajout de marges vides de chaque côté
 # Première ligne : colonnes vides et colonnes principales
@@ -53,14 +57,10 @@ with main_col1:
         "https://m.media-amazon.com/images/M/MV5BNWNlNTVkMWEtMDkxNC00YTJhLTllOTMtN2FlN2M0YTViMjg0XkEyXkFqcGc@._V1_QL75_UY74_CR5",
         width=330)
 
-movie_id = "tt6208148"
-with PostgreSQLDatabase() as db:
-    movie_data = db.query_data("movies", condition=f"movie_id = '{movie_id}'")
-
 with main_col2:
-    st.subheader("Nom du Film : "+movie_data[0][1]+"??")
-    st.write("Date de sortie : 2024")
-    st.write("Auteur : Rachel Zegler, Emilia Faucher")
+    st.subheader("Movie name : "+movie_data[0][1])
+    st.write("Release date : "+movie_data[0][2].year)
+    st.write("Filmmaker : Rachel Zegler, Emilia Faucher")
 
 # Deuxième ligne : colonnes vides et colonnes principales
 empty_col3, main_col3bis, empty_col5, main_col4, empty_col4 = st.columns([4, 9,3, 12, 4])  # Colonnes avec marges vides
