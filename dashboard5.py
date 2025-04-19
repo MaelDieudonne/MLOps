@@ -44,7 +44,7 @@ with PostgreSQLDatabase() as db:
     logging.info(f"DataFrame des sentiments créé avec {df_sents.shape[0]} lignes et {df_sents.shape[1]} colonnes.")
 
 cols = ['story', 'acting', 'visuals', 'sounds', 'values', 'overall']
-averages = df_sents[cols].mean(skipna=True)
+averages = df_sents[cols].mean(skipna=True).tolist()
 movie_title = movie_data[0][1]  # Le titre du film
 movie_year = movie_data[0][2]  # L'année du film
 
