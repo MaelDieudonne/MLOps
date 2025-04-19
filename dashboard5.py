@@ -39,16 +39,12 @@ with PostgreSQLDatabase() as db:
     logging.info(f"{len(sentiments)} entrées récupérées depuis la table 'reviews_sentiments'.")
 
     # Création du DataFrame sentiments
-    sents_columns = [desc[0] for desc in db.cursor.description]
+    sents_columns = ['id','story', 'acting', 'visuals', 'sounds', 'values', 'overall']
     df_sents = pd.DataFrame(sentiments, columns=sents_columns)
     logging.info(f"DataFrame des sentiments créé avec {df_sents.shape[0]} lignes et {df_sents.shape[1]} colonnes.")
 
-    # Fusion des reviews et des sentiments
-    df_merged = df_reviews.merge(df_sents, on="review_id", how="left")
-    logging.info(f"Fusion effectuée : DataFrame final avec {df_merged.shape[0]} lignes et {df_merged.shape[1]} colonnes.")
-
 cols = ['story', 'acting', 'visuals', 'sounds', 'values', 'overall']
-averages = df_merged[cols].mean(skipna=True)
+averages = df_sents[cols].mean(skipna=True)
 movie_title = movie_data[0][1]  # Le titre du film
 movie_year = movie_data[0][2]  # L'année du film
 
