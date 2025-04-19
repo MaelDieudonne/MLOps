@@ -211,7 +211,7 @@ with main_col51:
 
     # Tracer l’histogramme
     fig, ax = plt.subplots(figsize=(10, 3))
-    ax.bar(grouped.index.astype(str), grouped.values, color='white', width=0.8)
+    ax.bar(grouped.index.astype(str), grouped.values - (-2), color='white', width=0.8, bottom=-2)
 
     # Axe x formaté avec dates lisibles
     ax.set_xticks(range(len(grouped)))
@@ -258,6 +258,125 @@ with main_col61:
 
     # Style
     ax.set_title("Distribution des notes : Story", color='white')
+    ax.set_xlabel("Note", color='white')
+    ax.set_ylabel("Nombre de votes", color='white')
+    ax.set_facecolor('#111217')
+    fig.patch.set_facecolor('#111217')
+    ax.set_ylim(0, story_counts.values.max() + 5)
+    ax.tick_params(colors='white')
+    ax.xaxis.label.set_color('white')
+    ax.yaxis.label.set_color('white')
+    ax.title.set_color('white')
+    for spine in ax.spines.values():
+        spine.set_edgecolor('#2e2e2e')
+
+    st.pyplot(fig)
+
+with main_col62:
+    # Créer les catégories de notes (-2 à 2)
+    story_bins = [-2, -1.5, -0.5, 0.5, 1.5, 2]  # Pour avoir 5 classes : -2, -1, 0, 1, 2
+    story_labels = [-2, -1, 0, 1, 2]
+    df_sents['acting_cat'] = pd.cut(df_sents['acting'], bins=story_bins, labels=story_labels)
+
+    # Compter le nombre de votes pour chaque note
+    story_counts = df_sents['acting_cat'].value_counts().sort_index()
+
+    # Tracer l'histogramme
+    fig, ax = plt.subplots(figsize=(6, 3))
+    ax.bar(story_counts.index.astype(str), story_counts.values, color='white', width=0.6)
+
+    # Style
+    ax.set_title("Distribution des notes : Acting", color='white')
+    ax.set_xlabel("Note", color='white')
+    ax.set_ylabel("Nombre de votes", color='white')
+    ax.set_facecolor('#111217')
+    fig.patch.set_facecolor('#111217')
+    ax.set_ylim(0, story_counts.values.max() + 5)
+    ax.tick_params(colors='white')
+    ax.xaxis.label.set_color('white')
+    ax.yaxis.label.set_color('white')
+    ax.title.set_color('white')
+    for spine in ax.spines.values():
+        spine.set_edgecolor('#2e2e2e')
+
+    st.pyplot(fig)
+
+with main_col63:
+    # Créer les catégories de notes (-2 à 2)
+    story_bins = [-2, -1.5, -0.5, 0.5, 1.5, 2]  # Pour avoir 5 classes : -2, -1, 0, 1, 2
+    story_labels = [-2, -1, 0, 1, 2]
+    df_sents['visuals_cat'] = pd.cut(df_sents['visuals'], bins=story_bins, labels=story_labels)
+
+    # Compter le nombre de votes pour chaque note
+    story_counts = df_sents['visuals_cat'].value_counts().sort_index()
+
+    # Tracer l'histogramme
+    fig, ax = plt.subplots(figsize=(6, 3))
+    ax.bar(story_counts.index.astype(str), story_counts.values, color='white', width=0.6)
+
+    # Style
+    ax.set_title("Distribution des notes : Visuals", color='white')
+    ax.set_xlabel("Note", color='white')
+    ax.set_ylabel("Nombre de votes", color='white')
+    ax.set_facecolor('#111217')
+    fig.patch.set_facecolor('#111217')
+    ax.set_ylim(0, story_counts.values.max() + 5)
+    ax.tick_params(colors='white')
+    ax.xaxis.label.set_color('white')
+    ax.yaxis.label.set_color('white')
+    ax.title.set_color('white')
+    for spine in ax.spines.values():
+        spine.set_edgecolor('#2e2e2e')
+
+    st.pyplot(fig)
+
+# Sixième ligne : publication date
+empty_col70, main_col71, main_col72, empty_col73 = st.columns([4, 4, 4, 4])  # Colonnes avec marges vides
+    
+with main_col71:
+    # Créer les catégories de notes (-2 à 2)
+    story_bins = [-2, -1.5, -0.5, 0.5, 1.5, 2]  # Pour avoir 5 classes : -2, -1, 0, 1, 2
+    story_labels = [-2, -1, 0, 1, 2]
+    df_sents['sounds_cat'] = pd.cut(df_sents['sounds'], bins=story_bins, labels=story_labels)
+
+    # Compter le nombre de votes pour chaque note
+    story_counts = df_sents['sounds_cat'].value_counts().sort_index()
+
+    # Tracer l'histogramme
+    fig, ax = plt.subplots(figsize=(6, 3))
+    ax.bar(story_counts.index.astype(str), story_counts.values, color='white', width=0.6)
+
+    # Style
+    ax.set_title("Distribution des notes : Sounds", color='white')
+    ax.set_xlabel("Note", color='white')
+    ax.set_ylabel("Nombre de votes", color='white')
+    ax.set_facecolor('#111217')
+    fig.patch.set_facecolor('#111217')
+    ax.set_ylim(0, story_counts.values.max() + 5)
+    ax.tick_params(colors='white')
+    ax.xaxis.label.set_color('white')
+    ax.yaxis.label.set_color('white')
+    ax.title.set_color('white')
+    for spine in ax.spines.values():
+        spine.set_edgecolor('#2e2e2e')
+
+    st.pyplot(fig)
+
+with main_col72:
+    # Créer les catégories de notes (-2 à 2)
+    story_bins = [-2, -1.5, -0.5, 0.5, 1.5, 2]  # Pour avoir 5 classes : -2, -1, 0, 1, 2
+    story_labels = [-2, -1, 0, 1, 2]
+    df_sents['values_cat'] = pd.cut(df_sents['values'], bins=story_bins, labels=story_labels)
+
+    # Compter le nombre de votes pour chaque note
+    story_counts = df_sents['values_cat'].value_counts().sort_index()
+
+    # Tracer l'histogramme
+    fig, ax = plt.subplots(figsize=(6, 3))
+    ax.bar(story_counts.index.astype(str), story_counts.values, color='white', width=0.6)
+
+    # Style
+    ax.set_title("Distribution des notes : Values", color='white')
     ax.set_xlabel("Note", color='white')
     ax.set_ylabel("Nombre de votes", color='white')
     ax.set_facecolor('#111217')
