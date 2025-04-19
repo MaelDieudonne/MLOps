@@ -42,4 +42,4 @@ RUN poetry config virtualenvs.create false && \
 COPY . /app/
 
 # Make scripts executable
-RUN chmod +x /app/setup/db_init.py /app/scheduler.py /app/main.py /app/src/api.py /app/dashboard2.py
+RUN chmod +x /app/setup/db_init.py /app/scheduler.py /app/main.py /app/src/api.py /app/dashboard3.py
