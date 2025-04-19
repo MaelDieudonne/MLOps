@@ -92,7 +92,7 @@ with main_col13:
     st.title(str(df_sents.shape[0])+" reviews")
 
 # Deuxième ligne : image et radar
-empty_col20, main_col21, empty_col22, main_col23, empty_col24 = st.columns([3, 5, 1, 4, 3])  # Colonnes avec marges vides
+empty_col20, main_col21, empty_col22, main_col23, empty_col24 = st.columns([3, 5, 1, 5, 3])  # Colonnes avec marges vides
 
 with main_col21:
     # Section 1 - Image
@@ -151,19 +151,38 @@ with main_col23:
     st.pyplot(fig)
 
 # Troisième ligne : release date et rating
-empty_col30, main_col31, empty_col32, main_col33, empty_col34 = st.columns([2, 3, 6, 3, 2])  # Colonnes avec marges vides
+empty_col30, main_col31, empty_col32, main_col33, empty_col34 = st.columns([2, 3, 4, 3, 2])  # Colonnes avec marges vides
 
 with main_col31:
     st.title(str(df_data['release_date']))
 
 with main_col33:
-    st.title("Note : "+str(averages[5]))
+    st.title("Note : "+str(round(averages[5], 2)))
 
 # Quatrième ligne : publication date
 empty_col40, main_col41, empty_col42 = st.columns([2, 7, 2])  # Colonnes avec marges vides
 
-with main_col42:
-    st.write("Note : "+str(averages[5]))
+with main_col41:
+    # Créer les 20 intervalles de temps
+    bins = pd.date_range(start=df_sents['date'].min(), end=df_sents['date'].max(), periods=21)
+    
+    # Couper les dates en bins
+    df_sents['date_bin'] = pd.cut(df_sents['date'], bins=bins)
+    
+    # Compter le nombre de lignes par bin
+    hist_data = df_sents['date_bin'].value_counts().sort_index()
+    
+    # Tracer l'histogramme
+    fig, ax = plt.subplots(figsize=(10, 4))
+    ax.bar(hist_data.index.astype(str), hist_data.values, color='white')
+    ax.set_xticks(range(len(hist_data)))
+    ax.set_xticklabels([str(interval.left.date()) for interval in hist_data.index], rotation=45, ha='right')
+    ax.set_title("Nombre de lignes par période de temps")
+    ax.set_ylabel("Nombre de lignes")
+    ax.set_xlabel("Intervalle de dates")
+    ax.set_facecolor('#0d0f14')  # Fond du graphique
+    plt.tight_layout()
+    plt.show()
 
 # Deuxième ligne : colonnes vides et colonnes principales
 empty_col3, main_col3bis, empty_col5, main_col4, empty_col4 = st.columns([4, 9, 3, 12, 4])  # Colonnes avec marges vides
