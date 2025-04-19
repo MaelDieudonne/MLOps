@@ -7,45 +7,75 @@ from scipy.signal import savgol_filter
 from src.utils.db import PostgreSQLDatabase
 import time
 import subprocess
+from concurrent.futures import ThreadPoolExecutor
+import asyncio
+import logging
 
 st.set_page_config(layout="wide")
 
 # Ton movie_id (à ajuster selon l'utilisateur ou la logique de ton app)
 movie_id = "tt6208148"
 
-# Fonction pour exécuter le script Python en subprocess et attendre la création du fichier JSON
-def prepare_data(movie_id):
-    # Exécuter le script prepa_streamlit.py via subprocess
-    result = subprocess.run(
-        ['poetry','run','python', 'prepa_streamlit.py', movie_id],
-        capture_output=True, text=True
-    )
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-    # Vérifier si le processus a échoué
+# Function to run subprocess and capture logs
+def run_subprocess(movie_id):
+    logging.info(f"Running subprocess to execute 'prepa_streamlit.py' with movie_id {movie_id}")
+    
+    # Path to your script (adjust this path if necessary)
+    script_path = os.path.join(os.path.dirname(__file__), 'prepa_streamlit.py')
+    
+    if not os.path.exists(script_path):
+        logging.error(f"Script 'prepa_streamlit.py' not found at {script_path}")
+        return None, "Script not found"
+
+    result = subprocess.run(['poetry', 'run', 'python', script_path, movie_id], capture_output=True, text=True)
+    
     if result.returncode != 0:
-        st.error(f"Erreur lors de l'exécution du script: {result.stderr}")
-        return None
+        logging.error(f"Error running the script: {result.stderr}")
+        return None, result.stderr
+    
+    logging.info(f"Script executed successfully, output: {result.stdout}")
+    return result.stdout, None
 
-    # Attendre que le fichier JSON soit créé (par défaut, on attend 10 secondes maximum)
+# Asynchronous function to prepare data
+async def prepare_data_async(movie_id):
+    loop = asyncio.get_event_loop()
+    with ThreadPoolExecutor() as executor:
+        # Run the subprocess in a separate thread
+        stdout, stderr = await loop.run_in_executor(executor, run_subprocess, movie_id)
+    
+    if stderr:
+        return None, stderr
+    
+    # Assuming the data.json file is created
     file_path = 'data/data.json'
-    timeout = 10  # Augmenté pour éviter que l'attente soit trop courte
+    timeout = 10  # Timeout for file check
     start_time = time.time()
-
+    
     while not os.path.exists(file_path):
         if time.time() - start_time > timeout:
-            st.error("Erreur : Le fichier 'data.json' n'a pas été créé à temps.")
-            return None
-        time.sleep(0.5)
-
-    # Lire le fichier JSON et retourner les données
+            return None, "Erreur : Le fichier 'data.json' n'a pas été créé à temps."
+        await asyncio.sleep(0.5)  # Non-blocking wait
+    
+    # Read the data from the JSON file
     with open(file_path, 'r') as f:
         data = json.load(f)
+    
+    logging.info(f"Data loaded from {file_path}")
+    return data, None
 
-    return data
-
-# Page de chargement intermédiaire
+# Utilisation du spinner et gestion asynchrone dans Streamlit
 with st.spinner("🚧 Initialisation du dashboard... Chargement des données."):
-    data = prepare_data(movie_id)
+    data, error = asyncio.run(prepare_data_async("tt6208148"))
+    
+if error:
+    st.error(error)
+else:
+    st.success("Données chargées avec succès !")
+    # Afficher les données ou utiliser les données dans ton dashboard
+    st.write(data)
 
 if data is not None:
     # Assumer que les données sont sous forme d'une liste de 7 éléments

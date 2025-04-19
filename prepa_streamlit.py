@@ -1,10 +1,18 @@
+import logging
+import os
+import sys
 import numpy as np
 import pandas as pd
 from src.utils.db import PostgreSQLDatabase
-import sys
 import json
 
+# Set up logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
 movie_id = sys.argv[1]
+
+# Log the location of this script
+logging.info(f"Running the script from: {os.path.abspath(__file__)}")
 
 with PostgreSQLDatabase() as db:
     movie_data = db.query_data("movies", condition=f"movie_id = '{movie_id}'")
@@ -27,5 +35,8 @@ averages = df_merged[cols].mean(skipna=True)
 data = averages.tolist() + [movie_data[0][1]] + [movie_data[0][2].year]
 
 # Sauvegarder la liste dans un fichier JSON
+logging.info(f"Saving data to 'data/data.json'")
 with open('data/data.json', 'w') as f:
     json.dump(data, f)
+
+logging.info("Data preparation complete.")
