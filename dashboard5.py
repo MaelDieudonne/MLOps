@@ -31,7 +31,7 @@ with PostgreSQLDatabase() as db:
     logging.info(f"{len(movie_data)} enregistrements récupérés depuis la table 'movies' pour le movie_id '{movie_id}'.")
 
     query = f"""
-        SELECT s.review_id, s.story, s.acting, s.visuals, s.sounds, s.values, s.overall
+        SELECT s.review_id, s.story, s.acting, s.visuals, s.sounds, s.values, s.overall, r.date
         FROM reviews_sentiments s
         JOIN reviews_raw r ON s.review_id = r.review_id
         WHERE r.movie_id = '{movie_id}'
@@ -41,7 +41,7 @@ with PostgreSQLDatabase() as db:
     logging.info(f"{len(sentiments)} entrées récupérées depuis la table 'reviews_sentiments'.")
 
     # Création du DataFrame sentiments
-    sents_columns = ['id','story', 'acting', 'visuals', 'sounds', 'values', 'overall']
+    sents_columns = ['id','story', 'acting', 'visuals', 'sounds', 'values', 'overall','date']
     df_sents = pd.DataFrame(sentiments, columns=sents_columns)
     logging.info(f"DataFrame des sentiments créé avec {df_sents.shape[0]} lignes et {df_sents.shape[1]} colonnes.")
 
@@ -81,26 +81,22 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-empty_col1, title_col, empty_col2 = st.columns([2, 12, 2])  # Colonnes avec marges vides
-with title_col:
-    st.title(movie_title)
-
 # Ajout de marges vides de chaque côté
 # Première ligne : colonnes vides et titre, nb reviews
-empty_col10, main_col11, empty_col12, main_col13, empty_col14 = st.columns([2, 3, 6, 3, 2])  # Colonnes avec marges vides
+empty_col10, main_col11, empty_col12, main_col13, empty_col14 = st.columns([3, 3, 6, 3, 3])  # Colonnes avec marges vides
 
 with main_col11:
     st.title(movie_title)
 
 with main_col13:
-    st.write(str(df_sents.shape[0])+" reviews")
+    st.title(str(df_sents.shape[0])+" reviews")
 
 # Deuxième ligne : image et radar
-empty_col20, main_col21, empty_col22, main_col23, empty_col24 = st.columns([2, 5, 2, 5, 2])  # Colonnes avec marges vides
+empty_col20, main_col21, empty_col22, main_col23, empty_col24 = st.columns([3, 5, 1, 4, 3])  # Colonnes avec marges vides
 
 with main_col21:
     # Section 1 - Image
-    st.image(f"data/covers/{movie_id}.jpg", width=300)
+    st.image(f"data/covers/{movie_id}.jpg", width=330)
     
 with main_col23:
     # Section 2 - Radar avec les évaluations du film
@@ -161,10 +157,16 @@ with main_col31:
     st.title(str(df_data['release_date']))
 
 with main_col33:
+    st.title("Note : "+str(averages[5]))
+
+# Quatrième ligne : publication date
+empty_col40, main_col41, empty_col42 = st.columns([2, 7, 2])  # Colonnes avec marges vides
+
+with main_col42:
     st.write("Note : "+str(averages[5]))
 
 # Deuxième ligne : colonnes vides et colonnes principales
-empty_col3, main_col3bis, empty_col5, main_col4, empty_col4 = st.columns([4, 9,3, 12, 4])  # Colonnes avec marges vides
+empty_col3, main_col3bis, empty_col5, main_col4, empty_col4 = st.columns([4, 9, 3, 12, 4])  # Colonnes avec marges vides
 
 with main_col3bis:
     # Graphique 1 : Moyenne mobile lissée du nombre de ratings par jour
