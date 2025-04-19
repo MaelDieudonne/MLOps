@@ -167,5 +167,5 @@ With Streamlit. Includes...
 - Add an admin interface to the dashboard allowing to monitor the backend (including API costs) and manage users
 - Fully separate the backend and frontend, using an API to communicate between them (with permissions depending on users)
 - Use `playwright` for scraping, which is more flexible than Selenium
-- Implement more tests
 - Automate deployment with `argo CD`
+- Implement more tests...
