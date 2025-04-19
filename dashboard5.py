@@ -165,22 +165,30 @@ empty_col40, main_col41, empty_col42 = st.columns([2, 7, 2])  # Colonnes avec ma
 with main_col41:
     # Créer les 20 intervalles de temps
     bins = pd.date_range(start=df_sents['date'].min(), end=df_sents['date'].max(), periods=21)
-    
+
     # Couper les dates en bins
     df_sents['date_bin'] = pd.cut(df_sents['date'], bins=bins)
-    
+
     # Compter le nombre de lignes par bin
     hist_data = df_sents['date_bin'].value_counts().sort_index()
-    
+
     # Tracer l'histogramme
-    fig, ax = plt.subplots(figsize=(10, 4))
-    ax.bar(hist_data.index.astype(str), hist_data.values, color='white')
+    fig, ax = plt.subplots(figsize=(10, 3))
+    ax.bar(range(len(hist_data)), hist_data.values, color='white')
+    ax.set_facecolor('#0d0f14')
+    fig.patch.set_facecolor('#0d0f14')
     ax.set_xticks(range(len(hist_data)))
-    ax.set_xticklabels([str(interval.left.date()) for interval in hist_data.index], rotation=45, ha='right')
-    ax.set_title("Nombre de lignes par période de temps")
-    ax.set_ylabel("Nombre de lignes")
-    ax.set_xlabel("Intervalle de dates")
-    ax.set_facecolor('#0d0f14')  # Fond du graphique
+    ax.set_xticklabels([str(interval.left.date()) for interval in hist_data.index], rotation=45, ha='right', color='white')
+    ax.set_title("Nombre de lignes par période de temps", color='white')
+    ax.set_ylabel("Nombre de lignes", color='white')
+    ax.set_xlabel("Intervalle de dates", color='white')
+    ax.tick_params(colors='white')
+    ax.xaxis.label.set_color('white')
+    ax.yaxis.label.set_color('white')
+    ax.title.set_color('white')
+    for spine in ax.spines.values():
+        spine.set_edgecolor('#2e2e2e')
+
     st.pyplot(fig)
 
 # Cinquième ligne : publication date
@@ -213,18 +221,20 @@ with main_col51:
     y_smooth = cs(x_range)
     
     # Tracer le graphique
-    fig, ax = plt.subplots(figsize=(7, 4))
+    fig, ax = plt.subplots(figsize=(10, 3))
     ax.set_facecolor('#0d0f14')
     fig.patch.set_facecolor('#0d0f14')
     ax.plot(x_labels[x_range.astype(int)], y_smooth, color='blue', label='Spline cubique lissée')
-    ax.fill_between(x_labels[x_range.astype(int)], y_smooth, color='blue', alpha=0.3)
+    ax.fill_between(x_labels[x_range.astype(int)], -2, y_smooth, color='blue', alpha=0.3)
     ax.set_title('Évolution moyenne des notes overall', color='white')
     ax.set_xlabel('Date', color='white')
+    ax.set_xticklabels([str(interval.left.date()) for interval in hist_data.index], rotation=45, ha='right')
     ax.set_ylabel('Note moyenne', color='white')
     ax.tick_params(colors='white')
     ax.xaxis.label.set_color('white')
     ax.yaxis.label.set_color('white')
     ax.title.set_color('white')
+    ax.set_ylim(-2, 2)
     for spine in ax.spines.values():
         spine.set_edgecolor('#2e2e2e')
     st.pyplot(fig)
