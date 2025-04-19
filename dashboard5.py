@@ -17,9 +17,13 @@ if "data_loaded" not in st.session_state:
 
 @st.cache_data
 def load_movie_data(movie_id):
-    from src.utils.db import PostgreSQLDatabase  # au cas où
     with PostgreSQLDatabase() as db:
         movie_data = db.query_data("movies", condition=f"movie_id = '{movie_id}'")
+        return movie_data
+        
+@st.cache_data
+def load_movie_review(movie_id):
+    with PostgreSQLDatabase() as db:
         movie_review = db.query_data("reviews_raw", condition=f"movie_id = '{movie_id}'")
         review_columns = [desc[0] for desc in db.cursor.description]
         df_reviews = pd.DataFrame(movie_review, columns=review_columns)
@@ -32,19 +36,27 @@ def load_movie_data(movie_id):
         df_sents = pd.DataFrame(sentiments, columns=sents_columns)
 
         df_merged = df_reviews.merge(df_sents, on="review_id", how="left")
-        return movie_data, df_merged
+        return df_merged
 
 # Page de chargement intermédiaire
 if not st.session_state.data_loaded:
     with st.spinner("🚧 Initialisation du dashboard... Chargement des données."):
         t0 = time.time()
-        movie_data, df_merged = load_movie_data(movie_id)
+        movie_data = load_movie_data(movie_id)
         t1 = time.time()
         st.session_state.movie_data = movie_data
+        
+    with st.spinner("🚧 Initialisation du dashboard... Chargement des reviews."):
+        t0 = time.time()
+        df_merged = load_movie_review(movie_id)
+        t1 = time.time()
         st.session_state.df_merged = df_merged
-        st.session_state.data_loaded = True
-        st.toast(f"Données chargées en {round(t1 - t0, 2)} secondes ✅")
-        st.experimental_rerun()  # Recharge proprement pour afficher le dashboard
+        
+    # Une fois les données chargées, tu définis data_loaded à True pour éviter un rechargement
+    st.session_state.data_loaded = True
+    st.toast(f"Données chargées en {round(t1 - t0, 2)} secondes ✅")
+    st.experimental_rerun()  # Recharge proprement pour afficher le dashboard
+    
     st.stop()  # Stoppe le script ici
 
 # ✅ Logging visuel clair
@@ -103,7 +115,7 @@ with main_col1:
     
 with main_col2:
     st.subheader("Movie name : "+st.session_state.movie_data[0][1])
-    st.write("Release date : "+str(mst.session_state.movie_data[0][2].year))
+    st.write("Release date : "+str(st.session_state.movie_data[0][2].year))
     st.write("Filmmaker : Rachel Zegler, Emilia Faucher")
 
 # Deuxième ligne : colonnes vides et colonnes principales
