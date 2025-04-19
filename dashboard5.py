@@ -184,6 +184,53 @@ with main_col41:
     plt.tight_layout()
     plt.show()
 
+
+# Quatrième ligne : publication date
+empty_col50, main_col51, empty_col52 = st.columns([2, 7, 2])  # Colonnes avec marges vides
+    
+with main_col51:
+    # S'assurer que la colonne date est bien en datetime
+    df_sents['date'] = pd.to_datetime(df_sents['date'])
+    
+    # Définir les bornes temporelles
+    date_min = df_sents['date'].min()
+    date_max = df_sents['date'].max()
+    
+    # Créer 20 intervalles égaux
+    bins = pd.date_range(start=date_min, end=date_max, periods=21)
+    
+    # Couper les dates en 20 groupes (labels seront les milieux des intervalles pour l'axe x)
+    df_sents['interval'] = pd.cut(df_sents['date'], bins=bins, include_lowest=True)
+    
+    # Calculer la moyenne des notes "overall" par intervalle
+    grouped = df_sents.groupby('interval')['overall'].mean()
+    
+    # Pour l'axe x : utiliser les milieux des intervalles
+    x_labels = grouped.index.map(lambda x: x.left + (x.right - x.left) / 2)
+    y_values = grouped.values
+    
+    # Interpolation pour lisser la courbe
+    x_range = np.linspace(0, len(x_labels) - 1, 1000)
+    cs = CubicSpline(range(len(x_labels)), y_values)
+    y_smooth = cs(x_range)
+    
+    # Tracer le graphique
+    fig, ax = plt.subplots(figsize=(7, 4))
+    ax.set_facecolor('#0d0f14')
+    fig.patch.set_facecolor('#0d0f14')
+    ax.plot(x_labels[x_range.astype(int)], y_smooth, color='blue', label='Spline cubique lissée')
+    ax.fill_between(x_labels[x_range.astype(int)], y_smooth, color='blue', alpha=0.3)
+    ax.set_title('Évolution moyenne des notes overall', color='white')
+    ax.set_xlabel('Date', color='white')
+    ax.set_ylabel('Note moyenne', color='white')
+    ax.tick_params(colors='white')
+    ax.xaxis.label.set_color('white')
+    ax.yaxis.label.set_color('white')
+    ax.title.set_color('white')
+    for spine in ax.spines.values():
+        spine.set_edgecolor('#2e2e2e')
+    st.pyplot(fig)
+
 # Deuxième ligne : colonnes vides et colonnes principales
 empty_col3, main_col3bis, empty_col5, main_col4, empty_col4 = st.columns([4, 9, 3, 12, 4])  # Colonnes avec marges vides
 
