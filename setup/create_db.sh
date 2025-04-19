@@ -92,3 +92,5 @@ else
 fi
 
 echo "Environment variables set and saved to your shell config."
+
+rm ./values.yaml
