@@ -25,8 +25,8 @@ with PostgreSQLDatabase() as db:
     logging.info("Connexion à la base de données PostgreSQL établie.")
 
     # Récupération des données du film
-    movie_data = db.query_data("movies", condition=f"movie_id = '{movie_id}'")
-    data_columns = ['movie_id','title','release_date','nb_reviews','scrapping_timestamp']
+    movie_data = db.query_data("movies", columns = ['movie_id','title','release_date'], condition=f"movie_id = '{movie_id}'")
+    data_columns = ['movie_id','title','release_date']
     df_data = pd.DataFrame(movie_data, columns=data_columns)
     logging.info(f"{len(movie_data)} enregistrements récupérés depuis la table 'movies' pour le movie_id '{movie_id}'.")
 
@@ -48,7 +48,6 @@ with PostgreSQLDatabase() as db:
 cols = ['story', 'acting', 'visuals', 'sounds', 'values', 'overall']
 averages = df_sents[cols].mean(skipna=True).tolist()
 movie_title = movie_data[0][1]  # Le titre du film
-movie_year = movie_data[0][2]  # L'année du film
 
 # Ajouter du CSS personnalisé
 st.markdown("""
@@ -154,7 +153,7 @@ with main_col23:
 empty_col30, main_col31, empty_col32, main_col33, empty_col34 = st.columns([2, 3, 4, 3, 2])  # Colonnes avec marges vides
 
 with main_col31:
-    st.title(str(df_data['release_date']))
+    st.title(str(pd.to_datetime(df_data['release_date'].iloc[0]).strftime('%Y-%m-%d')))
 
 with main_col33:
     st.title("Note : "+str(round(averages[5], 2)))
