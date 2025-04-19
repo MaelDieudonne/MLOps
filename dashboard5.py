@@ -18,6 +18,7 @@ if "data_loaded" not in st.session_state:
 @st.cache_data
 def load_movie_data(movie_id):
     with PostgreSQLDatabase() as db:
+        st.write(f"db chargée")
         movie_data = db.query_data("movies", condition=f"movie_id = '{movie_id}'")
         return movie_data
         
