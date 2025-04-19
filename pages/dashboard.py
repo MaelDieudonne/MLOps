@@ -6,7 +6,7 @@ from src.utils.db import PostgreSQLDatabase
 import logging
 
 if "selected_movie" not in st.session_state:
-    st.warning("Veuillez sélectionner un film d'abord.")
+    st.warning("Please choose a movie first.")
     st.stop()
 
 movie_id = st.session_state["selected_movie"]
@@ -127,7 +127,7 @@ with main_col23:
     ax.plot(theta, r, color='red', alpha=0.4)
 
     # Label rouge en haut du cercle
-    ax.text(3 * np.pi / 5, note_generale + 0.3, 'Note générale', ha='center', color='red', fontsize=12)
+    ax.text(3 * np.pi / 5, note_generale + 0.35, 'Overall rating', ha='center', color='red', fontsize=12)
 
     # Affichage des lignes radiales mais sans leurs labels
     angle_degrees = np.degrees(angles[:-1])
@@ -179,9 +179,7 @@ with main_col41:
     fig.patch.set_facecolor('#111217')
     ax.set_xticks(range(len(hist_data)))
     ax.set_xticklabels([str(interval.left.date()) for interval in hist_data.index], rotation=45, ha='right', color='white')
-    ax.set_title("Nombre de lignes par période de temps", color='white')
-    ax.set_ylabel("Nombre de lignes", color='white')
-    ax.set_xlabel("Intervalle de dates", color='white')
+    ax.set_title("Number of review per time periods", color='white')
     ax.tick_params(colors='white')
     ax.xaxis.label.set_color('white')
     ax.yaxis.label.set_color('white')
@@ -221,9 +219,7 @@ with main_col51:
     )
 
     # Style du graphique
-    ax.set_title("Note moyenne par période de temps", color='white')
-    ax.set_xlabel("Intervalle de dates", color='white')
-    ax.set_ylabel("Note moyenne", color='white')
+    ax.set_title("Average rating per time periods", color='white')
     ax.set_facecolor('#111217')
     fig.patch.set_facecolor('#111217')
     ax.tick_params(colors='white')
@@ -247,7 +243,7 @@ with main_col61:
     story_labels = [-2, -1, 0, 1, 2]
     df_sents['story_cat'] = pd.cut(df_sents['story'], bins=story_bins, labels=story_labels)
 
-    # Compter le nombre de votes pour chaque note
+    # Compter le Votes pour chaque note
     story_counts = df_sents['story_cat'].value_counts().sort_index()
 
     # Tracer l'histogramme
@@ -255,9 +251,8 @@ with main_col61:
     ax.bar(story_counts.index.astype(str), story_counts.values, color='white', width=0.6)
 
     # Style
-    ax.set_title("Distribution des notes : Story", color='white')
-    ax.set_xlabel("Note", color='white')
-    ax.set_ylabel("Nombre de votes", color='white')
+    ax.set_title("Ratings : Story", color='white')
+    ax.set_ylabel("Votes", color='white')
     ax.set_facecolor('#111217')
     fig.patch.set_facecolor('#111217')
     ax.set_ylim(0, story_counts.values.max() + 5)
@@ -276,7 +271,7 @@ with main_col62:
     story_labels = [-2, -1, 0, 1, 2]
     df_sents['acting_cat'] = pd.cut(df_sents['acting'], bins=story_bins, labels=story_labels)
 
-    # Compter le nombre de votes pour chaque note
+    # Compter le Votes pour chaque note
     story_counts = df_sents['acting_cat'].value_counts().sort_index()
 
     # Tracer l'histogramme
@@ -284,9 +279,8 @@ with main_col62:
     ax.bar(story_counts.index.astype(str), story_counts.values, color='white', width=0.6)
 
     # Style
-    ax.set_title("Distribution des notes : Acting", color='white')
-    ax.set_xlabel("Note", color='white')
-    ax.set_ylabel("Nombre de votes", color='white')
+    ax.set_title("Ratings : Acting", color='white')
+    ax.set_ylabel("Votes", color='white')
     ax.set_facecolor('#111217')
     fig.patch.set_facecolor('#111217')
     ax.set_ylim(0, story_counts.values.max() + 5)
@@ -305,7 +299,7 @@ with main_col63:
     story_labels = [-2, -1, 0, 1, 2]
     df_sents['visuals_cat'] = pd.cut(df_sents['visuals'], bins=story_bins, labels=story_labels)
 
-    # Compter le nombre de votes pour chaque note
+    # Compter le Votes pour chaque note
     story_counts = df_sents['visuals_cat'].value_counts().sort_index()
 
     # Tracer l'histogramme
@@ -313,9 +307,8 @@ with main_col63:
     ax.bar(story_counts.index.astype(str), story_counts.values, color='white', width=0.6)
 
     # Style
-    ax.set_title("Distribution des notes : Visuals", color='white')
-    ax.set_xlabel("Note", color='white')
-    ax.set_ylabel("Nombre de votes", color='white')
+    ax.set_title("Ratings : Visuals", color='white')
+    ax.set_ylabel("Votes", color='white')
     ax.set_facecolor('#111217')
     fig.patch.set_facecolor('#111217')
     ax.set_ylim(0, story_counts.values.max() + 5)
@@ -337,7 +330,7 @@ with main_col71:
     story_labels = [-2, -1, 0, 1, 2]
     df_sents['sounds_cat'] = pd.cut(df_sents['sounds'], bins=story_bins, labels=story_labels)
 
-    # Compter le nombre de votes pour chaque note
+    # Compter le Votes pour chaque note
     story_counts = df_sents['sounds_cat'].value_counts().sort_index()
 
     # Tracer l'histogramme
@@ -345,9 +338,8 @@ with main_col71:
     ax.bar(story_counts.index.astype(str), story_counts.values, color='white', width=0.6)
 
     # Style
-    ax.set_title("Distribution des notes : Sounds", color='white')
-    ax.set_xlabel("Note", color='white')
-    ax.set_ylabel("Nombre de votes", color='white')
+    ax.set_title("Ratings : Sounds", color='white')
+    ax.set_ylabel("Votes", color='white')
     ax.set_facecolor('#111217')
     fig.patch.set_facecolor('#111217')
     ax.set_ylim(0, story_counts.values.max() + 5)
@@ -366,7 +358,7 @@ with main_col72:
     story_labels = [-2, -1, 0, 1, 2]
     df_sents['values_cat'] = pd.cut(df_sents['values'], bins=story_bins, labels=story_labels)
 
-    # Compter le nombre de votes pour chaque note
+    # Compter le Votes pour chaque note
     story_counts = df_sents['values_cat'].value_counts().sort_index()
 
     # Tracer l'histogramme
@@ -374,9 +366,8 @@ with main_col72:
     ax.bar(story_counts.index.astype(str), story_counts.values, color='white', width=0.6)
 
     # Style
-    ax.set_title("Distribution des notes : Values", color='white')
-    ax.set_xlabel("Note", color='white')
-    ax.set_ylabel("Nombre de votes", color='white')
+    ax.set_title("Ratings : Values", color='white')
+    ax.set_ylabel("Votes", color='white')
     ax.set_facecolor('#111217')
     fig.patch.set_facecolor('#111217')
     ax.set_ylim(0, story_counts.values.max() + 5)

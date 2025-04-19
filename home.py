@@ -3,7 +3,7 @@ from src.utils.db import PostgreSQLDatabase  # Assure-toi que ce module est acce
 
 st.set_page_config(layout="wide")
 
-st.title("🎬 Recherche de film")
+st.title("🎬 Movie search")
 
 @st.cache_data
 def get_movie_titles():
@@ -11,7 +11,7 @@ def get_movie_titles():
         result = db.query_raw("SELECT movie_id, title FROM movies")
         return result
 
-search_query = st.text_input("Rechercher un film par son titre")
+search_query = st.text_input("Search with movie title")
 
 if search_query:
     movie_list = get_movie_titles()
@@ -19,8 +19,8 @@ if search_query:
 
     if filtered:
         for movie_id, title in filtered:
-            if st.button(f"Voir {title}"):
+            if st.button(f"See {title}"):
                 st.session_state["selected_movie"] = movie_id
-                st.switch_page("dashboard.py")  # Redirige vers le dashboard
+                st.switch_page("pages/dashboard.py")  # Redirige vers le dashboard
     else:
-        st.warning("Aucun film trouvé.")
+        st.warning("No movie found.")
