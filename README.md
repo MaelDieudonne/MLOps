@@ -3,12 +3,21 @@ This project tracks the reception of movies based on user reviews published on [
 
 ## 1. Implementation
 There are 4 main components:
-- Web scraping
-- Aspect-based sentiment analysis
-- Dashboard
-- User management
+- Dynamic web scraping => with Selenium
+- Aspect-based sentiment analysis => through the OpenAI API
+- Dashboard => with Streamlit
+- ***User management => ???***
+- ***API as well?***
 
-Data is stored in a PostgreSQL database and saved in the DataLab with s3. A sample with 2 movies is provided.
+The dashboard can be accessed [here](https://movie-reviews-tracker.lab.sspcloud.fr/)
+
+Checklist:
+- The code is fully functionalized
+- The code is commented
+- The code has been cleaned with Flake8
+- Detailed logs are collected
+- Automated tests are available
+- Dependencies are managed with Poetry
 
 Architecture:
 <pre>
@@ -23,7 +32,7 @@ app/
 │   ├── create_db.sh
 │   ├── create_kubectl_secrets.sh
 │   ├── db_init.py
-│   └── install_dependencies.py
+│   └── install_dependencies.sh
 ├── src/
 │   ├── analysis.py
 │   ├── backup.py
@@ -41,23 +50,21 @@ app/
 ├── main.py
 └── scheduler.py</pre>
 
-### Installation
-#### In the DataLab (for developpement)
+## Installation
+### In the DataLab (for developpement)
 Launch a Postgresql service, then store the corresponding parameters in an `.env` file or a Datalab Vault :
-- DB_NAME=
-- DB_USER=
-- DB_PASSWORD=
-- DB_HOST=
+- `DB_NAME`
+- `DB_USER`
+- `DB_PASSWORD`
+- `DB_HOST`
 
 Launch the installation script with `chmod +x ./setup/install_dependencies.sh && source ./setup/install_dependencies.sh`. This script:
 1. Installs Chrome
 2. Installs Python and dependencies with Poetry
 3. Sets up the database (with `setup/db_init.py`)
-4. Launches the scheduler
+4. Launches the scheduler (which state can be checked with `pgrep -fl scheduler.py`)
 
-The state of the scheduler can be checked with `pgrep -fl scheduler.py`.
-
-#### With Kubernetes
+### With Kubernetes
 The main difficulty is the transmission of credentials between different environments...
 - Store the OPENAI_API_KEY in a Vault in the DataLab
 - Launch a Jupyter or VSCode service **with edit rights** and **access to the vault**
@@ -73,15 +80,24 @@ Some usefull commands:
 - To access the pod console: `kubectl exec -it <pod-name> -- /bin/sh` (then e.g. `pytest` to run tests)
 - To remove the databse: `kubectl delete statefulset postgresql-<id_number>`
 
-#### With Docker
+### With Docker
 A `docker-compose.yml` is provided which runs the tracker, the database and the dashboard as distinct services. The secrets must be set as environment variables, including parameters for the backup on S3 which can be retrieved [here](https://datalab.sspcloud.fr/account/storage).
 
 ### Manage movies
 They can be added or removed with `poetry run python -m src.manage_movies --add '<movie_id_1>' '<movie_id_2>' --remove '<movie_id_3>'` (where `<movie_id>` must be retrieved manually from IMDb, e.g., `tt0033467` for [Citizen Kane](https://www.imdb.com/title/tt0033467/?ref_=fn_all_ttl_1)) (in Docker / Kubernetes, skip `poetry run`).
 
 ## 2. Technical aspects
+### Data management
+Data is stored in a PostgreSQL database with 3 tables:
+- `movies` contains movie metadata
+- `reviews_raws` contains reviews as scraped
+- `reviews_sentiments` contains the results of sentiment analysis
 
-### scraping
+These tables are backed-up in the DataLab with s3. 
+
+A sample with 2 movies is provided.
+
+### Scraping
 Data must be collected from three IMDB pages:
 - The movie’s main page for metadata, including the total number of reviews.
 - The main reviews page, which shows the 25 most popular reviews by default; some reviews are hidden behind `<spoiler>` tags, and vote counts over 999 are rounded.
