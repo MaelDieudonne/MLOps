@@ -28,24 +28,14 @@ with PostgreSQLDatabase() as db:
     movie_data = db.query_data("movies", condition=f"movie_id = '{movie_id}'")
     logging.info(f"{len(movie_data)} enregistrements récupérés depuis la table 'movies' pour le movie_id '{movie_id}'.")
 
-    # Récupération des reviews du film
-    movie_review = db.query_data("reviews_raw", condition=f"movie_id = '{movie_id}'")
-    logging.info(f"{len(movie_review)} reviews récupérées depuis la table 'reviews_raw' pour le movie_id '{movie_id}'.")
-
-    # Création du DataFrame reviews
-    review_columns = [desc[0] for desc in db.cursor.description]
-    df_reviews = pd.DataFrame(movie_review, columns=review_columns)
-    logging.info(f"DataFrame des reviews créé avec {df_reviews.shape[0]} lignes et {df_reviews.shape[1]} colonnes.")
-
-    # Extraction des review_ids
-    review_ids = df_reviews['review_id'].tolist()
-    logging.info(f"{len(review_ids)} review_ids extraits pour la jointure avec les sentiments.")
+    query = f"""
+        SELECT s.review_id, s.story, s.acting, s.visuals, s.sounds, s.values, s.overall
+        FROM reviews_sentiments s
+        JOIN reviews_raw r ON s.review_id = r.review_id
+        WHERE r.movie_id = '{movie_id}'
+    """
     
-    review_ids_sql = ",".join([f"'{r}'" for r in review_ids])
-    logging.debug(f"Chaîne SQL des review_ids : {review_ids_sql[:100]}...")  # On tronque pour pas spammer les logs
-
-    # Récupération des sentiments associés
-    sentiments = db.query_data("reviews_sentiments", condition=f"review_id IN ({review_ids_sql})")
+    sentiments = db.query_raw(query)
     logging.info(f"{len(sentiments)} entrées récupérées depuis la table 'reviews_sentiments'.")
 
     # Création du DataFrame sentiments

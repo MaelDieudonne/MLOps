@@ -218,6 +218,26 @@ class PostgreSQLDatabase:
             else:
                 logger.error(f"Failed deleting data: {error}")
 
+    def query_raw(self, query, movie_id=None):
+        """
+        Execute a raw SQL query and return results. Use with caution.
+
+        :param query: Raw SQL query string
+        :param movie_id: Optional movie ID for logging
+        :return: List of rows (as tuples)
+        """
+        try:
+            self.cursor.execute(query)
+            results = self.cursor.fetchall()
+            logger.debug(f"{movie_id + ' - ' if movie_id else ''}Executed raw query: {query}")
+            return results
+        except (Exception, psycopg.Error) as error:
+            self.connection.rollback()
+            if movie_id:
+                logger.error(f"{movie_id} - Failed raw SQL query: {error}")
+            else:
+                logger.error(f"Failed raw SQL query: {error}")
+            return []
 
     def query_data(self, table_name, columns='*', condition=None, movie_id=None):
         """
