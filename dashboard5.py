@@ -6,69 +6,57 @@ from scipy.interpolate import CubicSpline
 from scipy.signal import savgol_filter
 from src.utils.db import PostgreSQLDatabase
 import time
+import subprocess
 
 st.set_page_config(layout="wide")
 
+# Ton movie_id (à ajuster selon l'utilisateur ou la logique de ton app)
 movie_id = "tt6208148"
 
-# Initialise l'état de chargement si pas encore défini
-if "data_loaded" not in st.session_state:
-    st.session_state.data_loaded = False
+# Fonction pour exécuter le script Python en subprocess et attendre la création du fichier JSON
+def prepare_data(movie_id):
+    # Exécuter le script prepa_streamlit.py via subprocess
+    result = subprocess.run(
+        ['poetry','run','python', 'prepa_streamlit.py', movie_id],
+        capture_output=True, text=True
+    )
 
-@st.cache_data
-def load_movie_data(movie_id):
-    with PostgreSQLDatabase() as db:
-        st.write(f"db chargée")
-        movie_data = db.query_data("movies", condition=f"movie_id = '{movie_id}'")
-        return movie_data
-        
-@st.cache_data
-def load_movie_review(movie_id):
-    with PostgreSQLDatabase() as db:
-        movie_review = db.query_data("reviews_raw", condition=f"movie_id = '{movie_id}'")
-        review_columns = [desc[0] for desc in db.cursor.description]
-        df_reviews = pd.DataFrame(movie_review, columns=review_columns)
+    # Vérifier si le processus a échoué
+    if result.returncode != 0:
+        st.error(f"Erreur lors de l'exécution du script: {result.stderr}")
+        return None
 
-        review_ids = df_reviews['review_id'].tolist()
-        review_ids_sql = ",".join([f"'{r}'" for r in review_ids])
+    # Attendre que le fichier JSON soit créé (par défaut, on attend 10 secondes maximum)
+    file_path = 'data/data.json'
+    timeout = 10  # Augmenté pour éviter que l'attente soit trop courte
+    start_time = time.time()
 
-        sentiments = db.query_data("reviews_sentiments", condition=f"review_id IN ({review_ids_sql})")
-        sents_columns = [desc[0] for desc in db.cursor.description]
-        df_sents = pd.DataFrame(sentiments, columns=sents_columns)
+    while not os.path.exists(file_path):
+        if time.time() - start_time > timeout:
+            st.error("Erreur : Le fichier 'data.json' n'a pas été créé à temps.")
+            return None
+        time.sleep(0.5)
 
-        df_merged = df_reviews.merge(df_sents, on="review_id", how="left")
-        return df_merged
+    # Lire le fichier JSON et retourner les données
+    with open(file_path, 'r') as f:
+        data = json.load(f)
+
+    return data
 
 # Page de chargement intermédiaire
-if not st.session_state.data_loaded:
-    with st.spinner("🚧 Initialisation du dashboard... Chargement des données."):
-        t0 = time.time()
-        movie_data = load_movie_data(movie_id)
-        t1 = time.time()
-        st.session_state.movie_data = movie_data
-        
-    with st.spinner("🚧 Initialisation du dashboard... Chargement des reviews."):
-        t0 = time.time()
-        df_merged = load_movie_review(movie_id)
-        t1 = time.time()
-        st.session_state.df_merged = df_merged
-        
-    # Une fois les données chargées, tu définis data_loaded à True pour éviter un rechargement
-    st.session_state.data_loaded = True
-    st.toast(f"Données chargées en {round(t1 - t0, 2)} secondes ✅")
-    st.experimental_rerun()  # Recharge proprement pour afficher le dashboard
-    
-    st.stop()  # Stoppe le script ici
+with st.spinner("🚧 Initialisation du dashboard... Chargement des données."):
+    data = prepare_data(movie_id)
 
-# ✅ Logging visuel clair
-st.write(f"🎬 Titre du film : {st.session_state.movie_data[0][1]}")
-st.write(f"📝 {len(st.session_state.df_merged)} reviews fusionnées avec les sentiments")
+if data is not None:
+    # Assumer que les données sont sous forme d'une liste de 7 éléments
+    averages = data[:6]  # Les moyennes des évaluations
+    movie_title = data[6]  # Le titre du film
+    movie_year = data[7]  # L'année du film
+    movie_id = data[8]  # L'ID du film
+    # Après avoir chargé les données, le reste du dashboard peut être affiché ici
 
-# Calcul des moyennes
-cols = ['story', 'acting', 'visuals', 'sounds', 'values', 'overall']
-averages = st.session_state.df_merged[cols].mean(skipna=True)
-st.write("📈 Moyennes calculées :", averages.round(2).to_dict())
-
+else:
+    st.error("Une erreur est survenue lors du chargement des données.")
 
 # Ajouter du CSS personnalisé
 st.markdown("""
@@ -103,7 +91,7 @@ st.markdown("""
 
 empty_col1, title_col, empty_col2 = st.columns([2, 12, 2])  # Colonnes avec marges vides
 with title_col:
-    st.title(st.session_state.movie_data[0][1])
+    st.title(movie_title)
 
 # Ajout de marges vides de chaque côté
 # Première ligne : colonnes vides et colonnes principales
@@ -115,8 +103,8 @@ with main_col1:
     st.image(f"data/covers/{movie_id}.jpg", width=330)
     
 with main_col2:
-    st.subheader("Movie name : "+st.session_state.movie_data[0][1])
-    st.write("Release date : "+str(st.session_state.movie_data[0][2].year))
+    st.subheader("Movie name : "+movie_title)
+    st.write("Release date : "+str(movie_year))
     st.write("Filmmaker : Rachel Zegler, Emilia Faucher")
 
 # Deuxième ligne : colonnes vides et colonnes principales
