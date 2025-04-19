@@ -2,19 +2,24 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: movie-reviews-tracker-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/enable-websockets: "true"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-buffering: "off"
 spec:
   ingressClassName: nginx
   tls:
-  - hosts:
-    - movie-reviews-trackerap2.lab.sspcloud.fr
+    - hosts:
+        - movie-reviews-trackerap2.lab.sspcloud.fr
   rules:
-  - host: movie-reviews-trackerap2.lab.sspcloud.fr
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: movie-reviews-tracker-service
-            port:
-              number: 80
+    - host: movie-reviews-trackerap2.lab.sspcloud.fr
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: movie-reviews-tracker-service
+                port:
+                  number: 80
