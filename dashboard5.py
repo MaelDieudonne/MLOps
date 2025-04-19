@@ -26,6 +26,8 @@ with PostgreSQLDatabase() as db:
 
     # Récupération des données du film
     movie_data = db.query_data("movies", condition=f"movie_id = '{movie_id}'")
+    data_columns = ['movie_id','title','release_date','nb_reviews','scrapping_timestamp']
+    df_data = pd.DataFrame(movie_data, columns=data_columns)
     logging.info(f"{len(movie_data)} enregistrements récupérés depuis la table 'movies' pour le movie_id '{movie_id}'.")
 
     query = f"""
@@ -84,23 +86,87 @@ with title_col:
     st.title(movie_title)
 
 # Ajout de marges vides de chaque côté
-# Première ligne : colonnes vides et colonnes principales
-empty_col1, main_col1, main_col2, main_col3, empty_col2 = st.columns([2, 3, 3, 6, 2])  # Colonnes avec marges vides
+# Première ligne : colonnes vides et titre, nb reviews
+empty_col10, main_col11, empty_col12, main_col13, empty_col14 = st.columns([2, 3, 6, 3, 2])  # Colonnes avec marges vides
 
-# Ensuite, tu peux faire ça dans les sections Streamlit :
-with main_col1:
-    st.write("🖼️ Chargement de l’image du film...")
-    st.image(f"data/covers/{movie_id}.jpg", width=330)
+with main_col11:
+    st.title(movie_title)
+
+with main_col13:
+    st.write(str(df_sents.shape[0])+" reviews")
+
+# Deuxième ligne : image et radar
+empty_col20, main_col21, empty_col22, main_col23, empty_col24 = st.columns([2, 5, 2, 5, 2])  # Colonnes avec marges vides
+
+with main_col21:
+    # Section 1 - Image
+    st.image(f"data/covers/{movie_id}.jpg", width=300)
     
-with main_col2:
-    st.subheader("Movie name : "+movie_title)
-    st.write("Release date : "+str(movie_year))
-    st.write("Filmmaker : Rachel Zegler, Emilia Faucher")
+with main_col23:
+    # Section 2 - Radar avec les évaluations du film
+    labels = ['story', 'acting', 'visuals', 'sounds', 'values']
+    notes = averages[:5].copy()  # Valeurs pour les différentes catégories
+    note_generale = averages[5]  # Note générale du film
+
+    # Boucle pour fermer le radar
+    labels += [labels[0]]
+    notes += [notes[0]]
+
+    # Angles pour chaque label
+    angles = np.linspace(0, 2 * np.pi, len(labels), endpoint=True).tolist()
+
+    # Création du graphique radar
+    fig, ax = plt.subplots(figsize=(6, 6), subplot_kw=dict(polar=True))
+
+    # Appliquer le même fond que les autres graphiques
+    ax.set_facecolor('#0d0f14')  # Fond du graphique radar
+    fig.patch.set_facecolor('#0d0f14')  # Fond autour du graphique
+
+    ax.plot(angles, notes, 'o-', linewidth=2, color='blue')
+    ax.fill(angles, notes, alpha=0.25, color='blue')
+
+    # Cercle pour la note générale
+    theta = np.linspace(0, 2 * np.pi, 100)
+    r = np.full_like(theta, note_generale)
+    ax.plot(theta, r, color='red', alpha=0.4)
+
+    # Label rouge en haut du cercle
+    ax.text(3 * np.pi / 5, note_generale + 0.3, 'Note générale', ha='center', color='red', fontsize=12)
+
+    # Affichage des lignes radiales mais sans leurs labels
+    angle_degrees = np.degrees(angles[:-1])
+    ax.set_thetagrids(angle_degrees, labels=[''] * len(angle_degrees))  # Vide les labels
+
+    # Ajouter les labels manuellement avec un décalage radial
+    label_offset = 2.6
+    for angle, label in zip(angles[:-1], labels[:-1]):
+        ax.text(angle, label_offset, label, ha='center', va='center', fontsize=10, color='white')
+
+    # Ajustement des axes
+    ax.set_ylim(-2, 2)
+    ax.set_yticks([-2, -1, 0, 1, 2])
+    ax.set_yticklabels(['-2', '-1', '0', '1', '2'], color='white')
+
+    # Mettre la bordure extérieure du cercle en blanc
+    ax.spines['polar'].set_visible(True)
+    ax.spines['polar'].set_color('white')  # Cercle extérieur en blanc
+
+    # Affichage du graphique dans Streamlit
+    st.pyplot(fig)
+
+# Troisième ligne : release date et rating
+empty_col30, main_col31, empty_col32, main_col33, empty_col34 = st.columns([2, 3, 6, 3, 2])  # Colonnes avec marges vides
+
+with main_col31:
+    st.title(str(df_data['release_date']))
+
+with main_col33:
+    st.write("Note : "+str(averages[5]))
 
 # Deuxième ligne : colonnes vides et colonnes principales
 empty_col3, main_col3bis, empty_col5, main_col4, empty_col4 = st.columns([4, 9,3, 12, 4])  # Colonnes avec marges vides
 
-with main_col3:
+with main_col3bis:
     # Graphique 1 : Moyenne mobile lissée du nombre de ratings par jour
     # Exécution sur un jeu de données fictif
     dates = pd.date_range("20230101", periods=100)
@@ -152,58 +218,6 @@ with main_col3:
     for spine in ax.spines.values():
         spine.set_edgecolor('#2e2e2e')
 
-    st.pyplot(fig)
-
-with main_col3bis:
-    # Section 3 - Radar avec les évaluations du film
-    labels = ['story', 'acting', 'visuals', 'sounds', 'values']
-    notes = averages[:5].copy()  # Valeurs pour les différentes catégories
-    note_generale = averages[5]  # Note générale du film
-
-    # Boucle pour fermer le radar
-    labels += [labels[0]]
-    notes += [notes[0]]
-
-    # Angles pour chaque label
-    angles = np.linspace(0, 2 * np.pi, len(labels), endpoint=True).tolist()
-
-    # Création du graphique radar
-    fig, ax = plt.subplots(figsize=(6, 6), subplot_kw=dict(polar=True))
-
-    # Appliquer le même fond que les autres graphiques
-    ax.set_facecolor('#0d0f14')  # Fond du graphique radar
-    fig.patch.set_facecolor('#0d0f14')  # Fond autour du graphique
-
-    ax.plot(angles, notes, 'o-', linewidth=2, color='blue')
-    ax.fill(angles, notes, alpha=0.25, color='blue')
-
-    # Cercle pour la note générale
-    theta = np.linspace(0, 2 * np.pi, 100)
-    r = np.full_like(theta, note_generale)
-    ax.plot(theta, r, color='red', alpha=0.4)
-
-    # Label rouge en haut du cercle
-    ax.text(3 * np.pi / 5, note_generale + 0.3, 'Note générale', ha='center', color='red', fontsize=12)
-
-    # Affichage des lignes radiales mais sans leurs labels
-    angle_degrees = np.degrees(angles[:-1])
-    ax.set_thetagrids(angle_degrees, labels=[''] * len(angle_degrees))  # Vide les labels
-
-    # Ajouter les labels manuellement avec un décalage radial
-    label_offset = 2.6
-    for angle, label in zip(angles[:-1], labels[:-1]):
-        ax.text(angle, label_offset, label, ha='center', va='center', fontsize=10, color='white')
-
-    # Ajustement des axes
-    ax.set_ylim(-2, 2)
-    ax.set_yticks([-2, -1, 0, 1, 2])
-    ax.set_yticklabels(['-2', '-1', '0', '1', '2'], color='white')
-
-    # Mettre la bordure extérieure du cercle en blanc
-    ax.spines['polar'].set_visible(True)
-    ax.spines['polar'].set_color('white')  # Cercle extérieur en blanc
-
-    # Affichage du graphique dans Streamlit
     st.pyplot(fig)
 
 with main_col4:
