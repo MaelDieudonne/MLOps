@@ -9,7 +9,7 @@ There are 5 main components:
 - ***Dashboard*** to present synthetic information on each movie.
 - ***User management system*** to mirror a professional environment.
 
-The dashboard can be accessed [here](https://movie-reviews-tracker.lab.sspcloud.fr/)
+The dashboard can be accessed [here](https://movie-reviews-tracker.lab.sspcloud.fr/) and the API [there](https://api-movie-reviews-tracker.lab.sspcloud.fr/).
 
 Checklist:
 - This project is hosted on GitHub, and development has been organized in separate branches.
@@ -139,7 +139,7 @@ Such a task is called **aspect-base sentiment analysis**. It is a seriously diff
 The only workable solution is to offload sentiment analysis to a **generative LLM**. A cursory experimentation proved that this works well with an adequate prompt. However, it requires very large models, that cannot be run locally but must be called through APIs. The current implementation relies on gpt-4o-mini from OpenAI, which is inexpensive ($0.15 / M tokens) but rather slow. An alternative would be to use Gemini from Google, which has a free tier, albeit with rates limits and requiring an API key as well.
 
 ### API
-A minimal implementation, primarily intended as a proof of concept. It can be launched and accessed from the terminal with:
+A minimal implementation, primarily intended as a proof of concept. In the DataLab, tt can be launched and accessed from the terminal with:
 - `poetry run uvicorn src.api:app --reload`
 - `curl http://127.0.0.1:8000/movies/tt0029583` (for instance)
 
