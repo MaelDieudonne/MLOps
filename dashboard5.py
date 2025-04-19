@@ -6,11 +6,8 @@ from scipy.interpolate import CubicSpline
 from scipy.signal import savgol_filter
 from src.utils.db import PostgreSQLDatabase
 import time
-import subprocess
 from concurrent.futures import ThreadPoolExecutor
-import asyncio
 import logging
-import os
 
 st.set_page_config(layout="wide")
 
