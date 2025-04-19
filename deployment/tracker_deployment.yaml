@@ -20,8 +20,8 @@ spec:
         command: ["/bin/bash", "-c"]
         args:
         - |
-          python -m setup.db_init &&
-          python scheduler.py
+          poetry run python -m setup.db_init &&
+          poetry run python scheduler.py
         envFrom:
         - secretRef:
             name: movie-reviews-credentials

@@ -37,6 +37,8 @@ app/
 │   ├── dashboard_service.yaml 
 │   ├── ingress.yaml
 │   └── tracker_deployment.yaml
+├── doc/
+│   └── kubernetes_commands.md    
 ├── logs/
 │   ├── backend.log
 │   └── frontend.log
@@ -87,19 +89,11 @@ Launch the installation script with `chmod +x ./setup/install_dependencies.sh &&
   - For the API
   - For the dashboard
 
-Some usefull commands in the Kubernetes environment:
-- To check running pods: `kubectl get pods`
-- To remove the deployment: `kubectl delete deployment movie-reviews-api-deployment movie-reviews-dashboard-deployment movie-reviews-tracker-deployment && kubectl delete ingress movie-reviews-ingress` (removing the pod alone is useless as it keeps restarting)
-- To release the domain name: `kubectl get ingress` / `kubectl delete ingress <ingress-name>`
-- To inspect secrets: `kubectl get secret` / `kubectl get secret <secret-name> -o yaml` / `kubectl delete secret <secret-name>`
-- To access the pod console: `kubectl exec -it <pod-name> -- /bin/sh` (then e.g. `pytest` to run tests)
-- To remove the databse: `kubectl delete statefulset postgresql-<id_number>`
-
 ### With Docker (for enjoyment)
 A `docker-compose.yml` is provided which runs the tracker, the database and the dashboard as distinct services. The secrets must be set as environment variables, including parameters for the backup on S3 which can be retrieved [here](https://datalab.sspcloud.fr/account/storage). Then with some luck, everything should run...
 
 ### Manage movies
-They can be added or removed from the terminal with `poetry run python -m src.manage_movies --add '<movie_id_1>' '<movie_id_2>' --remove '<movie_id_3>'` (where `<movie_id>` must be retrieved manually from IMDb, e.g., `tt0033467` for [Citizen Kane](https://www.imdb.com/title/tt0033467/?ref_=fn_all_ttl_1)) (`poetry run` must be skipped in Kubernetes / Docker as no `venv` is used in these settings).
+They can be added or removed from the terminal with `poetry run python -m src.manage_movies --add '<movie_id_1>' '<movie_id_2>' --remove '<movie_id_3>'` (where `<movie_id>` must be retrieved manually from IMDb, e.g., `tt0033467` for [Citizen Kane](https://www.imdb.com/title/tt0033467/?ref_=fn_all_ttl_1)).
 
 ## 2. Technical aspects
 ### Data management
