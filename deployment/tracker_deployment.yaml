@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: movie-reviews-tracker-deployment
+  labels:
+    app: movie-reviews-tracker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: movie-reviews-tracker
+  template:
+    metadata:
+      labels:
+        app: movie-reviews-tracker
+    spec:
+      containers:
+      - name: movie-reviews-tracker
+        image: maeldieudonne/mlops:testap23
+        command: ["/bin/bash", "-c"]
+        args:
+        - |
+          python -m setup.db_init &&
+          python scheduler.py
+        envFrom:
+        - secretRef:
+            name: movie-reviews-credentials

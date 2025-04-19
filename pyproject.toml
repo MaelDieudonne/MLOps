@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [project]
 name = "IMDbReviewsTracker"
-version = "1.1.0"
+version = "1.2.0"
 description = "This project tracks the reception of movies based on user reviews published on IMDb. It was realised during the Deployment of Data Science Projects course at ENSAE."
 authors = [
   { name = "Maël Dieudonné", email = "mael.dieudonne@ensae.fr" },
@@ -47,6 +47,7 @@ uvicorn = ">=0.34.1,<0.40.0"
 
 [tool.poetry.group.dev.dependencies]
 flake8 = ">=7.2.0,<8.0.0"
+vulture = ">=2.14.0,<3.0.0"
 
 [tool.poetry.group.test.dependencies]
 pytest = ">=8.3.5,<9.0.0"

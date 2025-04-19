@@ -71,8 +71,15 @@ class s3:
     def upload_covers(self, local_directory='data/covers'):
         try:
             s3_target = os.path.join(self.destination, 'covers').replace("\\", "/")
-            self.fs.put(local_directory, s3_target, recursive=True)
-            logger.info(f"Successfully synced covers to s3")
+
+            for root, _, files in os.walk(local_directory):
+                for file in files:
+                    local_file = os.path.join(root, file)
+                    relative_path = os.path.relpath(local_file, local_directory)
+                    s3_file = os.path.join(s3_target, relative_path).replace("\\", "/")
+                    self.fs.put(local_file, s3_file)
+
+            logger.info("Successfully synced covers to s3")
         except Exception as e:
             logger.error(f"Failed to sync covers to s3: {e}")
 

@@ -3,9 +3,7 @@
 # Define the name of the Kubernetes Secret
 SECRET_NAME="movie-reviews-credentials"
 
-# Array of key-value pairs for the secret.
-# The key will be the name in the secret, and the value will be
-# sourced from the corresponding environment variable.
+# Source values from the corresponding environment variable.
 declare -A CREDENTIALS=(
   ["DB_NAME"]="${DB_NAME}"
   ["DB_USER"]="${DB_USER}"
@@ -18,6 +16,18 @@ declare -A CREDENTIALS=(
   ["AWS_S3_ENDPOINT"]="${AWS_S3_ENDPOINT}"
   ["AWS_DEFAULT_REGION"]="${AWS_DEFAULT_REGION}"
 )
+
+# Source OPENAI_API_KEY from the .env file if absent from the environment
+if [[ -z "${CREDENTIALS["OPENAI_API_KEY"]}" ]]; then
+  echo "OPENAI_API_KEY is empty. Trying to load from .env..."
+
+  if [[ -f .env ]]; then
+    export $(grep -v '^#' .env | xargs)
+    CREDENTIALS["OPENAI_API_KEY"]="${OPENAI_API_KEY}"
+  else
+    echo ".env file not found!"
+  fi
+fi
 
 # Check if all required environment variables are set
 missing_vars=()
@@ -32,8 +42,7 @@ if [ ${#missing_vars[@]} -gt 0 ]; then
   for var in "${missing_vars[@]}"; do
     echo "- ${var}"
   done
-  echo "Please set these variables before running this script."
-  exit 1
+  echo "Please set these variables and run this script again."
 fi
 
 # Construct the kubectl create secret command

@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: movie-reviews-api-deployment
+  labels:
+    app: movie-reviews-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: movie-reviews-api
+  template:
+    metadata:
+      labels:
+        app: movie-reviews-api
+    spec:
+      containers:
+      - name: movie-reviews-api
+        image: maeldieudonne/mlops:testap23
+        ports:
+        - containerPort: 8001
+        command: ["uvicorn"]
+        args: ["src.api:app", "--host", "0.0.0.0", "--port", "8001"]
+        envFrom:
+        - secretRef:
+            name: movie-reviews-credentials
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8001
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8001
+          initialDelaySeconds: 20
+          periodSeconds: 10
