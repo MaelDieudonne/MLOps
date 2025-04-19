@@ -18,76 +18,49 @@ st.set_page_config(layout="wide")
 movie_id = "tt6208148"
 
 # Configure logging
+# Configuration du logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-# Function to run subprocess and capture logs
-def run_subprocess(movie_id):
-    logging.info(f"Running subprocess to execute 'prepa_streamlit.py' with movie_id {movie_id}")
-    
-    # Path to your script (adjust this path if necessary)
-    script_path = os.path.join(os.path.dirname(__file__), 'prepa_streamlit.py')
-    
-    if not os.path.exists(script_path):
-        logging.error(f"Script 'prepa_streamlit.py' not found at {script_path}")
-        return None, "Script not found"
+with PostgreSQLDatabase() as db:
+    logging.info("Connexion à la base de données PostgreSQL établie.")
 
-    result = subprocess.run(['poetry', 'run', 'python', script_path, movie_id])
-    
-    if result.returncode != 0:
-        logging.error(f"Error running the script: {result.stderr}")
-        return None, result.stderr
-    
-    logging.info(f"Script executed successfully, output: {result.stdout}")
-    return result.stdout, None
+    # Récupération des données du film
+    movie_data = db.query_data("movies", condition=f"movie_id = '{movie_id}'")
+    logging.info(f"{len(movie_data)} enregistrements récupérés depuis la table 'movies' pour le movie_id '{movie_id}'.")
 
-# Asynchronous function to prepare data
-async def prepare_data_async(movie_id):
-    loop = asyncio.get_event_loop()
-    with ThreadPoolExecutor() as executor:
-        # Run the subprocess in a separate thread
-        stdout, stderr = await loop.run_in_executor(executor, run_subprocess, movie_id)
-    
-    if stderr:
-        return None, stderr
-    
-    # Assuming the data.json file is created
-    file_path = 'data/data.json'
-    timeout = 10  # Timeout for file check
-    start_time = time.time()
-    
-    while not os.path.exists(file_path):
-        if time.time() - start_time > timeout:
-            return None, "Erreur : Le fichier 'data.json' n'a pas été créé à temps."
-        await asyncio.sleep(0.5)  # Non-blocking wait
-    
-    # Read the data from the JSON file
-    with open(file_path, 'r') as f:
-        data = json.load(f)
-    
-    logging.info(f"Data loaded from {file_path}")
-    return data, None
+    # Récupération des reviews du film
+    movie_review = db.query_data("reviews_raw", condition=f"movie_id = '{movie_id}'")
+    logging.info(f"{len(movie_review)} reviews récupérées depuis la table 'reviews_raw' pour le movie_id '{movie_id}'.")
 
-# Utilisation du spinner et gestion asynchrone dans Streamlit
-with st.spinner("🚧 Initialisation du dashboard... Chargement des données."):
-    data, error = asyncio.run(prepare_data_async("tt6208148"))
+    # Création du DataFrame reviews
+    review_columns = [desc[0] for desc in db.cursor.description]
+    df_reviews = pd.DataFrame(movie_review, columns=review_columns)
+    logging.info(f"DataFrame des reviews créé avec {df_reviews.shape[0]} lignes et {df_reviews.shape[1]} colonnes.")
+
+    # Extraction des review_ids
+    review_ids = df_reviews['review_id'].tolist()
+    logging.info(f"{len(review_ids)} review_ids extraits pour la jointure avec les sentiments.")
     
-if error:
-    st.error(error)
-else:
-    st.success("Données chargées avec succès !")
-    # Afficher les données ou utiliser les données dans ton dashboard
-    st.write(data)
+    review_ids_sql = ",".join([f"'{r}'" for r in review_ids])
+    logging.debug(f"Chaîne SQL des review_ids : {review_ids_sql[:100]}...")  # On tronque pour pas spammer les logs
 
-if data is not None:
-    # Assumer que les données sont sous forme d'une liste de 7 éléments
-    averages = data[:6]  # Les moyennes des évaluations
-    movie_title = data[6]  # Le titre du film
-    movie_year = data[7]  # L'année du film
-    movie_id = data[8]  # L'ID du film
-    # Après avoir chargé les données, le reste du dashboard peut être affiché ici
+    # Récupération des sentiments associés
+    sentiments = db.query_data("reviews_sentiments", condition=f"review_id IN ({review_ids_sql})")
+    logging.info(f"{len(sentiments)} entrées récupérées depuis la table 'reviews_sentiments'.")
 
-else:
-    st.error("Une erreur est survenue lors du chargement des données.")
+    # Création du DataFrame sentiments
+    sents_columns = [desc[0] for desc in db.cursor.description]
+    df_sents = pd.DataFrame(sentiments, columns=sents_columns)
+    logging.info(f"DataFrame des sentiments créé avec {df_sents.shape[0]} lignes et {df_sents.shape[1]} colonnes.")
+
+    # Fusion des reviews et des sentiments
+    df_merged = df_reviews.merge(df_sents, on="review_id", how="left")
+    logging.info(f"Fusion effectuée : DataFrame final avec {df_merged.shape[0]} lignes et {df_merged.shape[1]} colonnes.")
+
+cols = ['story', 'acting', 'visuals', 'sounds', 'values', 'overall']
+averages = df_merged[cols].mean(skipna=True)
+movie_title = movie_data[0][1]  # Le titre du film
+movie_year = movie_data[0][2]  # L'année du film
 
 # Ajouter du CSS personnalisé
 st.markdown("""
