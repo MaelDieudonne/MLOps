@@ -11,19 +11,22 @@ st.set_page_config(layout="wide")
 
 movie_id = "tt6208148"
 
-# ⏱️ Mise en cache du chargement des données
+# Initialise l'état de chargement si pas encore défini
+if "data_loaded" not in st.session_state:
+    st.session_state.data_loaded = False
+
 @st.cache_data
 def load_movie_data(movie_id):
+    from src.utils.db import PostgreSQLDatabase  # au cas où
     with PostgreSQLDatabase() as db:
         movie_data = db.query_data("movies", condition=f"movie_id = '{movie_id}'")
-        
         movie_review = db.query_data("reviews_raw", condition=f"movie_id = '{movie_id}'")
         review_columns = [desc[0] for desc in db.cursor.description]
         df_reviews = pd.DataFrame(movie_review, columns=review_columns)
 
         review_ids = df_reviews['review_id'].tolist()
         review_ids_sql = ",".join([f"'{r}'" for r in review_ids])
-        
+
         sentiments = db.query_data("reviews_sentiments", condition=f"review_id IN ({review_ids_sql})")
         sents_columns = [desc[0] for desc in db.cursor.description]
         df_sents = pd.DataFrame(sentiments, columns=sents_columns)
@@ -31,20 +34,26 @@ def load_movie_data(movie_id):
         df_merged = df_reviews.merge(df_sents, on="review_id", how="left")
         return movie_data, df_merged
 
-# ⏳ Affichage du spinner avec mesure du temps
-with st.spinner("⏳ Chargement des données depuis la base..."):
-    t0 = time.time()
-    movie_data, df_merged = load_movie_data(movie_id)
-    t1 = time.time()
-    st.success(f"📡 Données chargées avec succès en {round(t1 - t0, 2)} secondes.")
+# Page de chargement intermédiaire
+if not st.session_state.data_loaded:
+    with st.spinner("🚧 Initialisation du dashboard... Chargement des données."):
+        t0 = time.time()
+        movie_data, df_merged = load_movie_data(movie_id)
+        t1 = time.time()
+        st.session_state.movie_data = movie_data
+        st.session_state.df_merged = df_merged
+        st.session_state.data_loaded = True
+        st.toast(f"Données chargées en {round(t1 - t0, 2)} secondes ✅")
+        st.experimental_rerun()  # Recharge proprement pour afficher le dashboard
+    st.stop()  # Stoppe le script ici
 
 # ✅ Logging visuel clair
-st.write(f"🎬 Titre du film : {movie_data[0][1]}")
-st.write(f"📝 {len(df_merged)} reviews fusionnées avec les sentiments")
+st.write(f"🎬 Titre du film : {st.session_state.movie_data[0][1]}")
+st.write(f"📝 {len(st.session_state.df_merged)} reviews fusionnées avec les sentiments")
 
 # Calcul des moyennes
 cols = ['story', 'acting', 'visuals', 'sounds', 'values', 'overall']
-averages = df_merged[cols].mean(skipna=True)
+averages = st.session_state.df_merged[cols].mean(skipna=True)
 st.write("📈 Moyennes calculées :", averages.round(2).to_dict())
 
 
@@ -81,7 +90,7 @@ st.markdown("""
 
 empty_col1, title_col, empty_col2 = st.columns([2, 12, 2])  # Colonnes avec marges vides
 with title_col:
-    st.title(movie_data[0][1])
+    st.title(st.session_state.movie_data[0][1])
 
 # Ajout de marges vides de chaque côté
 # Première ligne : colonnes vides et colonnes principales
@@ -93,8 +102,8 @@ with main_col1:
     st.image(f"data/covers/{movie_id}.jpg", width=330)
     
 with main_col2:
-    st.subheader("Movie name : "+movie_data[0][1])
-    st.write("Release date : "+str(movie_data[0][2].year))
+    st.subheader("Movie name : "+st.session_state.movie_data[0][1])
+    st.write("Release date : "+str(mst.session_state.movie_data[0][2].year))
     st.write("Filmmaker : Rachel Zegler, Emilia Faucher")
 
 # Deuxième ligne : colonnes vides et colonnes principales
