@@ -25,9 +25,15 @@ with PostgreSQLDatabase() as db:
     logging.info("Connexion à la base de données PostgreSQL établie.")
 
     # Récupération des données du film
-    movie_data = db.query_data("movies", columns = ['movie_id','title','release_date'], condition=f"movie_id = '{movie_id}'")
-    data_columns = ['movie_id','title','release_date']
+    query = f"""
+        SELECT movie_id, title, release_date
+        FROM movies
+        WHERE movie_id = '{movie_id}'
+    """
+    movie_data = db.query_raw(query)
+    data_columns = ['movie_id', 'title', 'release_date']
     df_data = pd.DataFrame(movie_data, columns=data_columns)
+
     logging.info(f"{len(movie_data)} enregistrements récupérés depuis la table 'movies' pour le movie_id '{movie_id}'.")
 
     query = f"""
