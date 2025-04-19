@@ -157,7 +157,7 @@ with main_col3:
 with main_col3bis:
     # Section 3 - Radar avec les évaluations du film
     labels = ['story', 'acting', 'visuals', 'sounds', 'values']
-    notes = averages[:5]  # Valeurs pour les différentes catégories
+    notes = averages[:5].copy()  # Valeurs pour les différentes catégories
     note_generale = averages[5]  # Note générale du film
 
     # Boucle pour fermer le radar
