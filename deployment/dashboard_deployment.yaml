@@ -16,13 +16,13 @@ spec:
     spec:
       containers:
       - name: movie-reviews-dashboard
-        image: maeldieudonne/mlops:testap37
+        image: maeldieudonne/mlops:testap38
         ports:
         - containerPort: 8000
         command: ["/bin/bash", "-c"]
         args:
         - |
-          streamlit run dashboard5.py \
+          streamlit run home.py \
               --logger.level=debug \
               --server.port 8000 \
               --server.address 0.0.0.0 \

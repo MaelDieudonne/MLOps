@@ -2,19 +2,17 @@ import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-from scipy.interpolate import CubicSpline
-from scipy.signal import savgol_filter
 from src.utils.db import PostgreSQLDatabase
-import time
-from concurrent.futures import ThreadPoolExecutor
 import logging
+
+if "selected_movie" not in st.session_state:
+    st.warning("Veuillez sélectionner un film d'abord.")
+    st.stop()
+
+movie_id = st.session_state["selected_movie"]
 
 st.set_page_config(layout="wide")
 
-# Ton movie_id (à ajuster selon l'utilisateur ou la logique de ton app)
-movie_id = "tt6208148"
-
-# Configure logging
 # Configuration du logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
