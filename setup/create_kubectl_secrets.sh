@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define the name of the Kubernetes Secret
-SECRET_NAME="movie-reviews-tracker-credentials"
+SECRET_NAME="movie-reviews-credentials"
 
 # Array of key-value pairs for the secret.
 # The key will be the name in the secret, and the value will be
