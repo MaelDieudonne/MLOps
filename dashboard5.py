@@ -31,7 +31,7 @@ def run_subprocess(movie_id):
         logging.error(f"Script 'prepa_streamlit.py' not found at {script_path}")
         return None, "Script not found"
 
-    result = subprocess.run(['poetry', 'run', 'python', script_path, movie_id], capture_output=True, text=True)
+    result = subprocess.run(['poetry', 'run', 'python', script_path, movie_id])
     
     if result.returncode != 0:
         logging.error(f"Error running the script: {result.stderr}")
