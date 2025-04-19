@@ -181,11 +181,9 @@ with main_col41:
     ax.set_ylabel("Nombre de lignes")
     ax.set_xlabel("Intervalle de dates")
     ax.set_facecolor('#0d0f14')  # Fond du graphique
-    plt.tight_layout()
-    plt.show()
+    st.pyplot(fig)
 
-
-# Quatrième ligne : publication date
+# Cinquième ligne : publication date
 empty_col50, main_col51, empty_col52 = st.columns([2, 7, 2])  # Colonnes avec marges vides
     
 with main_col51:
@@ -229,106 +227,4 @@ with main_col51:
     ax.title.set_color('white')
     for spine in ax.spines.values():
         spine.set_edgecolor('#2e2e2e')
-    st.pyplot(fig)
-
-# Deuxième ligne : colonnes vides et colonnes principales
-empty_col3, main_col3bis, empty_col5, main_col4, empty_col4 = st.columns([4, 9, 3, 12, 4])  # Colonnes avec marges vides
-
-with main_col3bis:
-    # Graphique 1 : Moyenne mobile lissée du nombre de ratings par jour
-    # Exécution sur un jeu de données fictif
-    dates = pd.date_range("20230101", periods=100)
-    ratings = np.random.randint(1, 6, 100)
-    movie_id_selected = 1
-    df_movie = pd.DataFrame({"date": dates, "rating": ratings, "movie_id": [movie_id_selected]*100})
-
-    # Nombre de ratings par jour
-    daily_counts = df_movie.groupby('date').size().sort_index()
-
-    # Déterminer la taille de la fenêtre pour la moyenne mobile
-    window_size = int((daily_counts.index[-1] - daily_counts.index[0]).days / 40)
-
-    # Calculer la moyenne mobile du nombre de ratings
-    rolling_avg_counts = daily_counts.rolling(window=window_size).mean()
-
-    # Appliquer un filtre Savitzky-Golay pour un lissage supplémentaire (optionnel)
-    smoothed_rolling_avg_counts = savgol_filter(rolling_avg_counts.dropna(), window_length=31, polyorder=3)
-
-    # Supprimer les valeurs NaN avant de faire l'interpolation
-    valid_indices_counts = ~np.isnan(smoothed_rolling_avg_counts)  # Trouver les indices valides
-    x_counts = np.arange(len(smoothed_rolling_avg_counts))[valid_indices_counts]  # Index des données valides
-    y_counts = smoothed_rolling_avg_counts  # Moyenne mobile sans NaN
-
-    # Créer une spline cubique pour lisser la moyenne mobile du nombre de ratings
-    cs_counts = CubicSpline(x_counts, y_counts)
-
-    # Générer des points lissés pour le nombre de ratings
-    x_new_counts = np.linspace(0, len(smoothed_rolling_avg_counts)-1, 1000)  # Augmenter le nombre de points
-    y_new_counts = cs_counts(x_new_counts)
-
-    # Tracer le graphique
-    fig, ax = plt.subplots(figsize=(7, 4))
-    ax.set_facecolor('#0d0f14')  # Fond du graphique
-    fig.patch.set_facecolor('#0d0f14')  # Fond autour du graphique
-    ax.plot(daily_counts.index[x_new_counts.astype(int)], y_new_counts, color='blue', label='Spline cubique lissée')
-    ax.fill_between(daily_counts.index[x_new_counts.astype(int)], y_new_counts, color='blue', alpha=0.3)  # Aire colorée sous la courbe
-    ax.set_title('Moyenne mobile lissée du nombre de ratings', color='white')
-    ax.set_xlabel('Date', color='white')
-    ax.set_ylabel('Nombre de ratings', color='white')
-
-    # Couleur du texte
-    ax.tick_params(colors='white')  # Couleur des ticks
-    ax.xaxis.label.set_color('white')  # Label X
-    ax.yaxis.label.set_color('white')  # Label Y
-    ax.title.set_color('white')  # Titre
-
-    # Bordures des axes (spines)
-    for spine in ax.spines.values():
-        spine.set_edgecolor('#2e2e2e')
-
-    st.pyplot(fig)
-
-with main_col4:
-    # Graphique 2 : Moyenne mobile lissée des ratings par jour
-    # Moyenne des valeurs des ratings par jour
-    daily_avg_ratings = df_movie.groupby('date')['rating'].mean().sort_index()
-
-    # Calculer la moyenne mobile des valeurs des ratings
-    rolling_avg_ratings = daily_avg_ratings.rolling(window=window_size).mean()
-
-    # Appliquer un filtre Savitzky-Golay pour un lissage supplémentaire (optionnel)
-    smoothed_rolling_avg_ratings = savgol_filter(rolling_avg_ratings.dropna(), window_length=31, polyorder=3)
-
-    # Supprimer les valeurs NaN avant de faire l'interpolation
-    valid_indices_ratings = ~np.isnan(smoothed_rolling_avg_ratings)  # Trouver les indices valides
-    x_ratings = np.arange(len(smoothed_rolling_avg_ratings))[valid_indices_ratings]  # Index des données valides
-    y_ratings = smoothed_rolling_avg_ratings  # Moyenne mobile sans NaN
-
-    # Créer une spline cubique pour lisser la moyenne mobile des ratings
-    cs_ratings = CubicSpline(x_ratings, y_ratings)
-
-    # Générer des points lissés pour la moyenne des ratings
-    x_new_ratings = np.linspace(0, len(smoothed_rolling_avg_ratings)-1, 1000)  # Augmenter le nombre de points
-    y_new_ratings = cs_ratings(x_new_ratings)
-
-    # Tracer le graphique
-    fig, ax = plt.subplots(figsize=(7, 4))
-    ax.set_facecolor('#0d0f14')  # Fond du graphique
-    fig.patch.set_facecolor('#0d0f14')  # Fond autour du graphique
-    ax.plot(daily_avg_ratings.index[x_new_ratings.astype(int)], y_new_ratings, color='blue', label='Spline cubique lissée')
-    ax.fill_between(daily_avg_ratings.index[x_new_ratings.astype(int)], y_new_ratings, color='blue', alpha=0.3)  # Aire colorée sous la courbe
-    ax.set_title('Moyenne mobile lissée des ratings', color='white')
-    ax.set_xlabel('Date', color='white')
-    ax.set_ylabel('Moyenne des ratings', color='white')
-
-    # Couleur du texte
-    ax.tick_params(colors='white')  # Couleur des ticks
-    ax.xaxis.label.set_color('white')  # Label X
-    ax.yaxis.label.set_color('white')  # Label Y
-    ax.title.set_color('white')  # Titre
-
-    # Bordures des axes (spines)
-    for spine in ax.spines.values():
-        spine.set_edgecolor('#2e2e2e')
-
     st.pyplot(fig)
