@@ -10,29 +10,32 @@ st.set_page_config(layout="wide")
 
 movie_id = "tt6208148"
 with PostgreSQLDatabase() as db:
-    movie_data = db.query_data("movies", condition=f"movie_id = '{movie_id}'")
-    # 1. Récupérer les reviews pour un film donné
-    movie_review = db.query_data("reviews_raw", condition=f"movie_id = '{movie_id}'")
+    st.write("📡 Connexion à la base de données réussie")
 
-    # 2. Convertir en DataFrame
+    movie_data = db.query_data("movies", condition=f"movie_id = '{movie_id}'")
+    st.write("🎬 Données du film récupérées")
+
+    movie_review = db.query_data("reviews_raw", condition=f"movie_id = '{movie_id}'")
+    st.write(f"📝 {len(movie_review)} reviews brutes récupérées")
+
     review_columns = [desc[0] for desc in db.cursor.description]
     df_reviews = pd.DataFrame(movie_review, columns=review_columns)
 
-    # 3. Extraire les review_id
     review_ids = df_reviews['review_id'].tolist()
     review_ids_sql = ",".join([f"'{r}'" for r in review_ids])
 
-    # 4. Requête sur les sentiments pour les review_ids
     sentiments = db.query_data("reviews_sentiments", condition=f"review_id IN ({review_ids_sql})")
+    st.write(f"📊 {len(sentiments)} entrées de sentiments récupérées")
+
     sents_columns = [desc[0] for desc in db.cursor.description]
     df_sents = pd.DataFrame(sentiments, columns=sents_columns)
 
-    # 5. Merger les deux DataFrames sur review_id
     df_merged = df_reviews.merge(df_sents, on="review_id", how="left")
+    st.write("✅ Fusion des reviews avec les sentiments terminée")
 
-# 6. Afficher les 3 premières lignes
 cols = ['story', 'acting', 'visuals', 'sounds', 'values', 'overall']
 averages = df_merged[cols].mean(skipna=True)
+st.write("📈 Moyennes calculées :", averages.round(2).to_dict())
 
 # Ajouter du CSS personnalisé
 st.markdown("""
@@ -73,12 +76,11 @@ with title_col:
 # Première ligne : colonnes vides et colonnes principales
 empty_col1, main_col1, main_col2, main_col3, empty_col2 = st.columns([2, 3, 3, 6, 2])  # Colonnes avec marges vides
 
+# Ensuite, tu peux faire ça dans les sections Streamlit :
 with main_col1:
-    # Section 1 - Image du Film avec son Titre, Date et Auteur
-    st.image(
-        "https://m.media-amazon.com/images/M/MV5BNWNlNTVkMWEtMDkxNC00YTJhLTllOTMtN2FlN2M0YTViMjg0XkEyXkFqcGc@._V1_QL75_UY74_CR5",
-        width=330)
-
+    st.write("🖼️ Chargement de l’image du film...")
+    st.image(f"data/covers/{movie_id}.jpg", width=330)
+    
 with main_col2:
     st.subheader("Movie name : "+movie_data[0][1])
     st.write("Release date : "+str(movie_data[0][2].year))
@@ -145,7 +147,7 @@ with main_col3bis:
     # Section 3 - Radar avec les évaluations du film
     labels = ['story', 'acting', 'visuals', 'sounds', 'values']
     notes = averages[:5]  # Valeurs pour les différentes catégories
-    note_generale = average[5]  # Note générale du film
+    note_generale = averages[5]  # Note générale du film
 
     # Boucle pour fermer le radar
     labels += [labels[0]]

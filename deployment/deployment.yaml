@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: movie-reviews-tracker
-        image: maeldieudonne/mlops:testap2
+        image: maeldieudonne/mlops:testap4
         ports:
         - containerPort: 8000
         command: ["/bin/bash", "-c"]
@@ -24,7 +24,7 @@ spec:
         - |
           python -m setup.db_init &&
           python scheduler.py &
-          streamlit run dashboard3.py \
+          streamlit run dashboard3.py --logger.level=debug \
             --server.port 8000 \
             --server.enableCORS false \
             --server.enableXsrfProtection false

@@ -34,3 +34,16 @@ cols = ['story', 'acting', 'visuals', 'sounds', 'values', 'overall']
 averages = df_merged[cols].mean(skipna=True)
 
 print(averages)
+
+import matplotlib.pyplot as plt
+
+# Création de l'histogramme avec 20 intervalles (bins)
+plt.figure(figsize=(12, 4))
+plt.hist(df_merged['date'], bins=20, color='skyblue', edgecolor='black')
+plt.xlabel("Date")
+plt.ylabel("Nombre de lignes")
+plt.title("Distribution des reviews dans le temps")
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.savefig("test.png", dpi=300)
+plt.close()
