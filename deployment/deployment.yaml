@@ -22,8 +22,7 @@ spec:
         command: ["/bin/bash", "-c"]
         args:
         - |
-          python -m setup.db_init &&
-          python scheduler.py &
+          python -m setup.db_init &
           streamlit run dashboard5.py \
               --logger.level=debug \
               --server.port 8000 \
