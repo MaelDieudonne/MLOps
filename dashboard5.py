@@ -76,7 +76,7 @@ st.markdown("""
 
         /* Style de fond du dashboard */
         .main .block-container {
-            background-color: #0d0f14;  /* Couleur de fond gris foncé */
+            background-color: #111217;  /* Couleur de fond gris foncé */
         }
     </style>
 """, unsafe_allow_html=True)
@@ -115,8 +115,8 @@ with main_col23:
     fig, ax = plt.subplots(figsize=(6, 6), subplot_kw=dict(polar=True))
 
     # Appliquer le même fond que les autres graphiques
-    ax.set_facecolor('#0d0f14')  # Fond du graphique radar
-    fig.patch.set_facecolor('#0d0f14')  # Fond autour du graphique
+    ax.set_facecolor('#111217')  # Fond du graphique radar
+    fig.patch.set_facecolor('#111217')  # Fond autour du graphique
 
     ax.plot(angles, notes, 'o-', linewidth=2, color='blue')
     ax.fill(angles, notes, alpha=0.25, color='blue')
@@ -175,8 +175,8 @@ with main_col41:
     # Tracer l'histogramme
     fig, ax = plt.subplots(figsize=(10, 3))
     ax.bar(range(len(hist_data)), hist_data.values, color='white')
-    ax.set_facecolor('#0d0f14')
-    fig.patch.set_facecolor('#0d0f14')
+    ax.set_facecolor('#111217')
+    fig.patch.set_facecolor('#111217')
     ax.set_xticks(range(len(hist_data)))
     ax.set_xticklabels([str(interval.left.date()) for interval in hist_data.index], rotation=45, ha='right', color='white')
     ax.set_title("Nombre de lignes par période de temps", color='white')
@@ -197,44 +197,76 @@ empty_col50, main_col51, empty_col52 = st.columns([2, 7, 2])  # Colonnes avec ma
 with main_col51:
     # S'assurer que la colonne date est bien en datetime
     df_sents['date'] = pd.to_datetime(df_sents['date'])
-    
-    # Définir les bornes temporelles
-    date_min = df_sents['date'].min()
-    date_max = df_sents['date'].max()
-    
-    # Créer 20 intervalles égaux
-    bins = pd.date_range(start=date_min, end=date_max, periods=21)
-    
-    # Couper les dates en 20 groupes (labels seront les milieux des intervalles pour l'axe x)
+
+    # Créer 20 intervalles temporels équidistants
+    bins = pd.date_range(start=df_sents['date'].min(), end=df_sents['date'].max(), periods=21)
+
+    # Découper les dates en intervalles
     df_sents['interval'] = pd.cut(df_sents['date'], bins=bins, include_lowest=True)
-    
-    # Calculer la moyenne des notes "overall" par intervalle
+
+    # Calculer la moyenne des notes 'overall' pour chaque intervalle
     grouped = df_sents.groupby('interval')['overall'].mean()
-    
-    # Pour l'axe x : utiliser les milieux des intervalles
-    x_labels = grouped.index.map(lambda x: x.left + (x.right - x.left) / 2)
-    y_values = grouped.values
-    
-    # Interpolation pour lisser la courbe
-    x_range = np.linspace(0, len(x_labels) - 1, 1000)
-    cs = CubicSpline(range(len(x_labels)), y_values)
-    y_smooth = cs(x_range)
-    
-    # Tracer le graphique
+
+    # Tracer l’histogramme
     fig, ax = plt.subplots(figsize=(10, 3))
-    ax.set_facecolor('#0d0f14')
-    fig.patch.set_facecolor('#0d0f14')
-    ax.plot(x_labels[x_range.astype(int)], y_smooth, color='blue', label='Spline cubique lissée')
-    ax.fill_between(x_labels[x_range.astype(int)], -2, y_smooth, color='blue', alpha=0.3)
-    ax.set_title('Évolution moyenne des notes overall', color='white')
-    ax.set_xlabel('Date', color='white')
-    ax.set_xticklabels([str(interval.left.date()) for interval in hist_data.index], rotation=45, ha='right')
-    ax.set_ylabel('Note moyenne', color='white')
+    ax.bar(grouped.index.astype(str), grouped.values, color='white', width=0.8)
+
+    # Axe x formaté avec dates lisibles
+    ax.set_xticks(range(len(grouped)))
+    ax.set_xticklabels(
+        [str(interval.left.date()) for interval in grouped.index],
+        rotation=45,
+        ha='right',
+        fontsize=8
+    )
+
+    # Style du graphique
+    ax.set_title("Note moyenne par période de temps", color='white')
+    ax.set_xlabel("Intervalle de dates", color='white')
+    ax.set_ylabel("Note moyenne", color='white')
+    ax.set_facecolor('#111217')
+    fig.patch.set_facecolor('#111217')
     ax.tick_params(colors='white')
     ax.xaxis.label.set_color('white')
     ax.yaxis.label.set_color('white')
     ax.title.set_color('white')
     ax.set_ylim(-2, 2)
+
+    # Bordures
     for spine in ax.spines.values():
         spine.set_edgecolor('#2e2e2e')
+
     st.pyplot(fig)
+
+# Sixième ligne : publication date
+empty_col60, main_col61, main_col62, main_col63, empty_col64 = st.columns([2, 4, 4, 4, 2])  # Colonnes avec marges vides
+    
+with main_col61:
+    # Créer les catégories de notes (-2 à 2)
+    story_bins = [-2, -1.5, -0.5, 0.5, 1.5, 2]  # Pour avoir 5 classes : -2, -1, 0, 1, 2
+    story_labels = [-2, -1, 0, 1, 2]
+    df_sents['story_cat'] = pd.cut(df_sents['story'], bins=story_bins, labels=story_labels)
+
+    # Compter le nombre de votes pour chaque note
+    story_counts = df_sents['story_cat'].value_counts().sort_index()
+
+    # Tracer l'histogramme
+    fig, ax = plt.subplots(figsize=(6, 3))
+    ax.bar(story_counts.index.astype(str), story_counts.values, color='white', width=0.6)
+
+    # Style
+    ax.set_title("Distribution des notes : Story", color='white')
+    ax.set_xlabel("Note", color='white')
+    ax.set_ylabel("Nombre de votes", color='white')
+    ax.set_facecolor('#111217')
+    fig.patch.set_facecolor('#111217')
+    ax.set_ylim(0, story_counts.values.max() + 5)
+    ax.tick_params(colors='white')
+    ax.xaxis.label.set_color('white')
+    ax.yaxis.label.set_color('white')
+    ax.title.set_color('white')
+    for spine in ax.spines.values():
+        spine.set_edgecolor('#2e2e2e')
+
+    st.pyplot(fig)
+
