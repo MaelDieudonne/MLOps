@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: movie-reviews-tracker
-        image: maeldieudonne/mlops:testap10
+        image: maeldieudonne/mlops:testap11
         ports:
         - containerPort: 8000
         command: ["/bin/bash", "-c"]
