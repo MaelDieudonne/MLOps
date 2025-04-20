@@ -15,12 +15,30 @@ class s3:
         """
         Initialize s3 connection parameters
         """
-        load_dotenv()
+        # Look for variables in the environment
+        s3_endpoint = os.environ.get('AWS_S3_ENDPOINT')
+        s3_key = os.environ.get("AWS_ACCESS_KEY_ID")
+        s3_secret = os.environ.get("AWS_SECRET_ACCESS_KEY")
+        s3_token = os.environ.get("AWS_SESSION_TOKEN")
+
+        if not all([s3_endpoint, s3_key, s3_secret, s3_token]):
+            # Fall back on the .env file
+            logger.warning("s3 credentials not found in the environment, trying to load the .env file")
+            try:
+                load_dotenv()
+                s3_endpoint = os.getenv('AWS_S3_ENDPOINT')
+                s3_key = os.getenv("AWS_ACCESS_KEY_ID")
+                s3_secret = os.getenv("AWS_SECRET_ACCESS_KEY")
+                s3_token = os.getenv("AWS_SESSION_TOKEN")
+                logger.debug("s3 credentials loaded from .env file")
+            except Exception as e:
+                logger.error(f"Failed to load s3 credentials from .env file: {e}")
+
         self.fs = s3fs.S3FileSystem(
-            client_kwargs={'endpoint_url': 'https://' + os.environ['AWS_S3_ENDPOINT']},
-            key=os.environ["AWS_ACCESS_KEY_ID"],
-            secret=os.environ["AWS_SECRET_ACCESS_KEY"],
-            token=os.environ["AWS_SESSION_TOKEN"])
+            client_kwargs={'endpoint_url': 'https://' + s3_endpoint},
+            key = s3_key,
+            secret = s3_secret,
+            token = s3_token)
         bucket_name = 'maeldieudonne'
         self.destination = bucket_name + '/diffusion/'
 
@@ -53,8 +71,15 @@ class s3:
     def upload_covers(self, local_directory='data/covers'):
         try:
             s3_target = os.path.join(self.destination, 'covers').replace("\\", "/")
-            self.fs.put(local_directory, s3_target, recursive=True)
-            logger.info(f"Successfully synced covers to s3")
+
+            for root, _, files in os.walk(local_directory):
+                for file in files:
+                    local_file = os.path.join(root, file)
+                    relative_path = os.path.relpath(local_file, local_directory)
+                    s3_file = os.path.join(s3_target, relative_path).replace("\\", "/")
+                    self.fs.put(local_file, s3_file)
+
+            logger.info("Successfully synced covers to s3")
         except Exception as e:
             logger.error(f"Failed to sync covers to s3: {e}")
 
@@ -138,3 +163,27 @@ class s3:
             logger.info(f"Successfully restored covers from s3")
         except Exception as e:
             logger.error(f"Failed to restore covers from s3: {e}")
+
+
+    def retrieve_cover(self, movie_id, local_folder = 'data/covers/'):
+        """
+        Retrieves a single cover image (movie_id.jpg) from the S3 bucket and copies it to data/covers/ locally.
+        If retrieval fails, creates an empty blank JPEG to avoid display issues.
+        """
+        s3_file = os.path.join(self.destination, 'covers', f"{movie_id}.jpg").replace("\\", "/")
+        os.makedirs(local_folder, exist_ok=True)
+        local_file = os.path.join(local_folder, f"{movie_id}.jpg")
+
+        try:
+            self.fs.get(s3_file, local_file)
+            logger.info(f"Successfully retrieved {s3_file} and saved it to {local_file}")
+        except Exception as e:
+            logger.error(f"Failed to retrieve {s3_file}: {e}")
+
+            try:
+                logger.info(f"Creating an empty JPEG at {local_file}")
+                empty_image = Image.new('RGB', (100, 100), color=(255, 255, 255))
+                empty_image.save(local_file, 'jpg')
+                logger.info(f"Created empty JPEG at {local_file}")
+            except Exception as e:
+                logger.error(f"Failed to create empty JPEG: {e}")

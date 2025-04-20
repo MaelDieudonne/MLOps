@@ -40,37 +40,9 @@ echo "Installing dependencies via Poetry..."
 poetry install
 
 
-# Check the configuration
-echo "Checking the configuration..."
-
-## Is the .env file present?
-if [ ! -f .env ]; then
-  echo ".env file not found."
-  echo "Copying from setup/.env.template..."
-  cp setup/.env.template .env
-  echo "Install aborted. Set credentials and run the script again." >&2
-  exit 1
-fi
-
-## Are variables defined?
-REQUIRED_VARS=("DB_NAME" "DB_USER" "DB_PASSWORD" "DB_HOST")
-for VAR in "${REQUIRED_VARS[@]}"; do
-  if ! grep -qE "^$VAR=[^[:space:]]+" .env 2>/dev/null; then
-    echo "Missing variable in .env: $VAR" >&2
-    echo "Install aborted. Set credentials and run the script again." >&2
-    exit 1
-  fi
-done
-
-if ! grep -qE "^OPENAI_API_KEY=[^[:space:]]+" .env 2>/dev/null; then
-  echo "Missing OpenAI API key in .env" >&2
-  echo "Install proceeding. Sentiment analysis won't run." >&2
-fi
-
-
 # Create the tables and restoring backup
-python -m setup.db_init
+poetry run python -m setup.db_init
 
 
 # Launch the scheduler
-python scheduler.py &
+poetry run python scheduler.py &

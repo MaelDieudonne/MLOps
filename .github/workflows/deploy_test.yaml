@@ -1,0 +1,28 @@
+name: Build and Deploy Docker Container
+
+on:
+  push:
+    branches:
+      - dev-frontend-allinstreamlit
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:        
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Login to DockerHub
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
+      - name: Remove existing Docker image (if any)
+        run: docker rmi -f maeldieudonne/mlops:testap55 || true
+
+      - name: Build Docker image
+        run: |
+          docker build --no-cache --pull \
+            -t maeldieudonne/mlops:testap55 .
+
+      - name: Push Docker image
+        run: docker push maeldieudonne/mlops:testap55

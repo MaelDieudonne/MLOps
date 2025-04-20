@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: movie-reviews-dashboard-deployment
+  labels:
+    app: movie-reviews-dashboard
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: movie-reviews-dashboard
+  template:
+    metadata:
+      labels:
+        app: movie-reviews-dashboard
+    spec:
+      containers:
+      - name: movie-reviews-dashboard
+        image: maeldieudonne/mlops:testap55
+        ports:
+        - containerPort: 8000
+        command: ["/bin/bash", "-c"]
+        args:
+        - |
+          streamlit run home.py \
+              --logger.level=debug \
+              --server.port 8000 \
+              --server.address 0.0.0.0 \
+              --server.enableCORS false \
+              --server.enableXsrfProtection false
+        envFrom:
+        - secretRef:
+            name: movie-reviews-credentials
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 10

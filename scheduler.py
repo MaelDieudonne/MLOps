@@ -80,7 +80,7 @@ def schedule_tasks():
     scheduler.start()
 
     try:
-        logger.info("Scheduler started. Press Ctrl+C to exit.")
+        logger.info("Scheduler started.")
         while True:
             time.sleep(1)
     except (KeyboardInterrupt, SystemExit):

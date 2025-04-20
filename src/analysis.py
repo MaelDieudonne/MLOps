@@ -11,9 +11,26 @@ logger = get_backend_logger()
 
 class GPT:
     def __init__(self):
-        load_dotenv()
-        openai.api_key = os.getenv('OPENAI_API_KEY')
-        self.client = OpenAI()
+        # Look for the variable in the environment
+        api_key = os.environ.get("OPENAI_API_KEY")
+
+        if not api_key:
+            # Fall back on the .env file
+            logger.warning("OpenAI credentials not found in the environment, trying to load the .env file")
+            try:
+                load_dotenv()
+                api_key = os.getenv('OPENAI_API_KEY')
+            except Exception as e:
+                logger.error(f"Failed to load .env file: {e}")
+                logger.error("OpenAI credentials missing!")
+                self.client = None
+        
+        # Set the API key if found
+        if api_key:
+            openai.api_key = api_key
+            self.client = OpenAI(api_key=api_key)
+            logger.debug("OpenAI credentials loaded successfully")
+
 
     def sentiment(self, review, movie_id):
         text = review[3] + f"\n\n" + review[4]

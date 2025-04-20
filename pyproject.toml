@@ -4,16 +4,17 @@ build-backend = "poetry.core.masonry.api"
 
 [project]
 name = "IMDbReviewsTracker"
-version = "1.1.0"
+version = "1.2.0"
 description = "This project tracks the reception of movies based on user reviews published on IMDb. It was realised during the Deployment of Data Science Projects course at ENSAE."
 authors = [
   { name = "Maël Dieudonné", email = "mael.dieudonne@ensae.fr" },
-  { name = "Nathan Van Assche" },
-  { name = "Aymeric Perrin" }
+  { name = "Aymeric Perrin" },
+  { name = "Nathan Van Assche" }
 ]
 license = "MIT" 
 readme = "README.md"
 requires-python = ">=3.12"
+dynamic = ["dependencies"]
 
 [tool.poetry]
 package-mode = false
@@ -27,6 +28,7 @@ chromedriver-py = ">=135.0.7049.84,<136.0.0.0"
 colorlog = ">=6.9.0,<7.0.0"
 datetime = ">=5.5,<6.0"
 dotenv = ">=0.9.9,<0.10.0"
+fastapi = ">=0.115.12,<0.200.0"
 fastparquet = ">=2024.11.0,<2025.0.0"
 matplotlib = ">=3.10.1,<4.0.0"
 numpy = ">=2.2.4,<3.0.0"
@@ -41,9 +43,11 @@ scipy = ">=1.15.2,<2.0.0"
 selenium = ">=4.31.0,<5.0.0"
 streamlit = ">=1.44.1,<2.0.0"
 tqdm = ">=4.67.1,<5.0.0"
+uvicorn = ">=0.34.1,<0.40.0"
 
 [tool.poetry.group.dev.dependencies]
 flake8 = ">=7.2.0,<8.0.0"
+vulture = ">=2.14.0,<3.0.0"
 
 [tool.poetry.group.test.dependencies]
 pytest = ">=8.3.5,<9.0.0"
