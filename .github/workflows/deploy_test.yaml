@@ -17,12 +17,12 @@ jobs:
         run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
       - name: Remove existing Docker image (if any)
-        run: docker rmi -f maeldieudonne/mlops:testap59 || true
+        run: docker rmi -f maeldieudonne/mlops:test || true
 
       - name: Build Docker image
         run: |
           docker build --no-cache --pull \
-            -t maeldieudonne/mlops:testap59 .
+            -t maeldieudonne/mlops:test .
 
       - name: Push Docker image
-        run: docker push maeldieudonne/mlops:testap59
+        run: docker push maeldieudonne/mlops:test

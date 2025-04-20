@@ -11,10 +11,10 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - movie-reviews-tracker.lab.sspcloud.fr
-        - api-movie-reviews-tracker.lab.sspcloud.fr
+        - test-movie-reviews-tracker.lab.sspcloud.fr
+        - test-api-movie-reviews-tracker.lab.sspcloud.fr
   rules:
-    - host: movie-reviews-tracker.lab.sspcloud.fr
+    - host: test-movie-reviews-tracker.lab.sspcloud.fr
       http:
         paths:
           - path: /
@@ -24,7 +24,7 @@ spec:
                 name: movie-reviews-dashboard-service
                 port:
                   number: 80
-    - host: api-movie-reviews-tracker.lab.sspcloud.fr
+    - host: test-api-movie-reviews-tracker.lab.sspcloud.fr
       http:
         paths:
           - path: /
