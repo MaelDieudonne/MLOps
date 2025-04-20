@@ -3,7 +3,7 @@ name: Build and Deploy Docker Container
 on:
   push:
     branches:
-      - dev-frontend-allinstreamlit
+      - users
 
 jobs:
   build:
@@ -17,12 +17,12 @@ jobs:
         run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
       - name: Remove existing Docker image (if any)
-        run: docker rmi -f maeldieudonne/mlops:testap55 || true
+        run: docker rmi -f nathanvnh/mlops:testap1 || true
 
       - name: Build Docker image
         run: |
           docker build --no-cache --pull \
-            -t maeldieudonne/mlops:testap55 .
+            -t nathanvnh/mlops:testap1 .
 
       - name: Push Docker image
-        run: docker push maeldieudonne/mlops:testap55
+        run: docker push nathanvnh/mlops:testap1
