@@ -209,7 +209,7 @@ class PostgreSQLDatabase:
 
     def query_movie(self, movie_id):
         """
-        Execute a SQL query and return movie_id, titl and release date
+        Execute a SQL query and return movie_id, title and release date
 
         :param movie_id: Optional movie ID for logging
         :return: List of rows (as tuples)
