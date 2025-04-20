@@ -60,30 +60,30 @@ backgound_color = '#D3D3D3'
 st.markdown(f"""
     <style>
         /* Réduire les espaces au-dessus du titre */
-        .css-1d391kg {
+        .css-1d391kg {{
             margin-top: 0px;
-        }
+        }}
 
         /* Réduire l'espace au-dessus du corps principal (contient tout sauf l'en-tête et la barre de déploiement) */
-        .main {
+        .main {{
             padding-top: 0px;
-        }
+        }}
 
         /* Réduire l'espace de la barre contenant le bouton Deploy */
-        header {
+        header {{
             padding: 0px 0px;
             height: 0px;
-        }
+        }}
 
         /* Réduire l'espace en bas de la page */
-        .block-container {
+        .block-container {{
             padding-bottom: 0px;
-        }
+        }}
 
         /* Style de fond du dashboard */
-        .main .block-container {
+        .main .block-container {{
             background-color: {backgound_color};
-        }
+        }}
     </style>
 """, unsafe_allow_html=True)
 
@@ -192,7 +192,7 @@ with main_col41:
     fig.patch.set_facecolor(backgound_color)
     ax.set_xticks(range(len(hist_data)))
     ax.set_xticklabels([str(interval.left.date()) for interval in hist_data.index], rotation=45, ha='right', color='white')
-    ax.set_title("Number of review per time periods", color='white')
+    ax.set_title("Number of published reviews", color='white')
     ax.tick_params(colors='white')
     ax.xaxis.label.set_color('white')
     ax.yaxis.label.set_color('white')
@@ -264,7 +264,7 @@ with main_col61:
     ax.bar(story_counts.index.astype(str), story_counts.values, color='white', width=0.6)
 
     # Style
-    ax.set_title("Ratings : Story", color='white')
+    ax.set_title("Ratings for Narrative / Storyline", color='white')
     ax.set_ylabel("Votes", color='white')
     ax.set_facecolor(backgound_color)
     fig.patch.set_facecolor(backgound_color)
@@ -292,7 +292,7 @@ with main_col62:
     ax.bar(story_counts.index.astype(str), story_counts.values, color='white', width=0.6)
 
     # Style
-    ax.set_title("Ratings : Acting", color='white')
+    ax.set_title("Ratings for Acting / Performance", color='white')
     ax.set_ylabel("Votes", color='white')
     ax.set_facecolor(backgound_color)
     fig.patch.set_facecolor(backgound_color)
@@ -320,7 +320,7 @@ with main_col63:
     ax.bar(story_counts.index.astype(str), story_counts.values, color='white', width=0.6)
 
     # Style
-    ax.set_title("Ratings : Visuals", color='white')
+    ax.set_title("Ratings for Visuals / Cinematography", color='white')
     ax.set_ylabel("Votes", color='white')
     ax.set_facecolor(backgound_color)
     fig.patch.set_facecolor(backgound_color)
@@ -351,7 +351,7 @@ with main_col71:
     ax.bar(story_counts.index.astype(str), story_counts.values, color='white', width=0.6)
 
     # Style
-    ax.set_title("Ratings : Sounds", color='white')
+    ax.set_title("Ratings for Music / Sounds", color='white')
     ax.set_ylabel("Votes", color='white')
     ax.set_facecolor(backgound_color)
     fig.patch.set_facecolor(backgound_color)
@@ -379,7 +379,7 @@ with main_col72:
     ax.bar(story_counts.index.astype(str), story_counts.values, color='white', width=0.6)
 
     # Style
-    ax.set_title("Ratings : Values", color='white')
+    ax.set_title("Ratings for Values / Entertainment", color='white')
     ax.set_ylabel("Votes", color='white')
     ax.set_facecolor(backgound_color)
     fig.patch.set_facecolor(backgound_color)
