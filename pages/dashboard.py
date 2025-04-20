@@ -40,6 +40,12 @@ if not st.session_state.get("authentication_status"):
         name_of_registered_user = authenticator.register_user()
         if email_of_registered_user:
             st.success('User registered successfully')
+
+            # Ajout automatique d'un rôle par défaut
+            if username_of_registered_user in config['credentials']['usernames']:
+                config['credentials']['usernames'][username_of_registered_user]['roles'] = ['viewer']
+
+            # Sauvegarde du fichier YAML mis à jour
             with open('user.yaml', 'w') as file:
                 yaml.dump(config, file, default_flow_style=False, allow_unicode=True)
     except Exception as e:
@@ -146,8 +152,6 @@ if "selected_movie" not in st.session_state:
     st.stop()
 
 movie_id = st.session_state["selected_movie"]
-
-st.set_page_config(layout="wide")
 
 with PostgreSQLDatabase() as db:
     logger.info("Connexion à la base de données PostgreSQL établie.")
