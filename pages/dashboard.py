@@ -54,7 +54,8 @@ averages = df_sents[cols].mean(skipna=True).tolist()
 movie_title = movie_data[0][1]
 
 
-background_color = '#D3D3D3'
+background_color = '#DCDCDC'
+
 
 # Ajouter du CSS personnalisé
 st.markdown(f"""
@@ -87,16 +88,15 @@ st.markdown(f"""
     </style>
 """, unsafe_allow_html=True)
 
+
 # Ajout de marges vides de chaque côté
 # Première ligne : colonnes vides et titre, nb reviews
 empty_col10, main_col11, empty_col12, main_col13, empty_col14 = st.columns([3, 3, 6, 3, 3])  # Colonnes avec marges vides
 
 with main_col11:
-    # st.title(movie_title)
     st.markdown(f"<h1 style='text-align: center;'>{movie_title}</h1>", unsafe_allow_html=True)
 
 with main_col13:
-    # st.title(str(df_sents.shape[0])+" reviews")
     review_count = df_sents.shape[0]
     st.markdown(f"<h2 style='text-align: center;'>{review_count} reviews</h2>", unsafe_allow_html=True)
 
@@ -105,7 +105,18 @@ empty_col20, main_col21, empty_col22, main_col23, empty_col24 = st.columns([3, 5
 
 with main_col21:
     # Section 1 - Image
-    st.image(f"data/covers/{movie_id}.jpg", width=330)
+    image_path = f"data/covers/{movie_id}.jpg"
+    if os.path.exists(image_path):
+        st.markdown(
+            f"""
+            <div style="display: flex; justify-content: center;">
+                <img src="data/covers/{movie_id}.jpg" width="330">
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+    else:
+        st.warning(f"Cover image not found for {movie_id}.")
 
 with main_col23:
     # Section 2 - Radar avec les évaluations du film
@@ -157,7 +168,21 @@ with main_col23:
     ax.spines['polar'].set_color('white')  # Cercle extérieur en blanc
 
     # Affichage du graphique dans Streamlit
-    st.pyplot(fig)
+    # st.pyplot(fig)
+
+    buf = BytesIO()
+    fig.savefig(buf, format="png", bbox_inches='tight', transparent=True)
+    buf.seek(0)
+
+    # Display centered using markdown
+    st.markdown(
+        f"""
+        <div style="display: flex; justify-content: center;">
+            <img src="data:image/png;base64,{base64.b64encode(buf.getvalue()).decode()}" />
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
 # Troisième ligne : release date et rating
 empty_col30, main_col31, empty_col32, main_col33, empty_col34 = st.columns([2, 3, 4, 3, 2])  # Colonnes avec marges vides
@@ -165,7 +190,7 @@ empty_col30, main_col31, empty_col32, main_col33, empty_col34 = st.columns([2, 3
 with main_col31:
     # st.title(f"Release date: {pd.to_datetime(df_data['release_date'].iloc[0]).strftime('%Y-%m-%d')}")
     release_date = pd.to_datetime(df_data['release_date'].iloc[0]).strftime('%Y-%m-%d')
-    st.markdown(f"<h1 style='text-align: center;'>Release date: {release_date}</h1>", unsafe_allow_html=True)
+    st.markdown(f"<h2 style='text-align: center;'>Release date: {release_date}</h2>", unsafe_allow_html=True)
 
 with main_col33:
     # st.title(f"Overall sentiment: {(round(averages[5], 2}")
@@ -187,16 +212,16 @@ with main_col41:
 
     # Tracer l'histogramme
     fig, ax = plt.subplots(figsize=(10, 3))
-    ax.bar(range(len(hist_data)), hist_data.values, color='white')
+    ax.bar(range(len(hist_data)), hist_data.values, color='#0063B2FF')
     ax.set_facecolor(background_color)
     fig.patch.set_facecolor(background_color)
     ax.set_xticks(range(len(hist_data)))
-    ax.set_xticklabels([str(interval.left.date()) for interval in hist_data.index], rotation=45, ha='right', color='white')
-    ax.set_title("Number of published reviews", color='white')
-    ax.tick_params(colors='white')
-    ax.xaxis.label.set_color('white')
-    ax.yaxis.label.set_color('white')
-    ax.title.set_color('white')
+    ax.set_xticklabels([str(interval.left.date()) for interval in hist_data.index], rotation=45, ha='right', color='#0063B2FF')
+    ax.set_title("Number of published reviews", color='#0063B2FF')
+    ax.tick_params(colors='#0063B2FF')
+    ax.xaxis.label.set_color('#0063B2FF')
+    ax.yaxis.label.set_color('#0063B2FF')
+    ax.title.set_color('#0063B2FF')
     for spine in ax.spines.values():
         spine.set_edgecolor('#2e2e2e')
 
@@ -220,7 +245,7 @@ with main_col51:
 
     # Tracer l’histogramme
     fig, ax = plt.subplots(figsize=(10, 3))
-    ax.bar(grouped.index.astype(str), grouped.values - (-2), color='white', width=0.8, bottom=-2)
+    ax.bar(grouped.index.astype(str), grouped.values - (-2), color='#0063B2FF', width=0.8, bottom=-2)
 
     # Axe x formaté avec dates lisibles
     ax.set_xticks(range(len(grouped)))
@@ -232,13 +257,13 @@ with main_col51:
     )
 
     # Style du graphique
-    ax.set_title("Average rating per time periods", color='white')
+    ax.set_title("Average rating per time periods", color='#0063B2FF')
     ax.set_facecolor(background_color)
     fig.patch.set_facecolor(background_color)
-    ax.tick_params(colors='white')
-    ax.xaxis.label.set_color('white')
-    ax.yaxis.label.set_color('white')
-    ax.title.set_color('white')
+    ax.tick_params(colors='#0063B2FF')
+    ax.xaxis.label.set_color('#0063B2FF')
+    ax.yaxis.label.set_color('#0063B2FF')
+    ax.title.set_color('#0063B2FF')
     ax.set_ylim(-2, 2)
 
     # Bordures
@@ -261,18 +286,18 @@ with main_col61:
 
     # Tracer l'histogramme
     fig, ax = plt.subplots(figsize=(6, 3))
-    ax.bar(story_counts.index.astype(str), story_counts.values, color='white', width=0.6)
+    ax.bar(story_counts.index.astype(str), story_counts.values, color='#97BC62FF', width=0.6)
 
     # Style
-    ax.set_title("Ratings for Narrative / Storyline", color='white')
-    ax.set_ylabel("Votes", color='white')
+    ax.set_title("Ratings for Narrative / Storyline", color='black')
+    ax.set_ylabel("Votes", color='#97BC62FF')
     ax.set_facecolor(background_color)
     fig.patch.set_facecolor(background_color)
     ax.set_ylim(0, story_counts.values.max() + 5)
-    ax.tick_params(colors='white')
-    ax.xaxis.label.set_color('white')
-    ax.yaxis.label.set_color('white')
-    ax.title.set_color('white')
+    ax.tick_params(colors='#97BC62FF')
+    ax.xaxis.label.set_color('#97BC62FF')
+    ax.yaxis.label.set_color('#97BC62FF')
+    ax.title.set_color('#97BC62FF')
     for spine in ax.spines.values():
         spine.set_edgecolor('#2e2e2e')
 
@@ -289,18 +314,18 @@ with main_col62:
 
     # Tracer l'histogramme
     fig, ax = plt.subplots(figsize=(6, 3))
-    ax.bar(story_counts.index.astype(str), story_counts.values, color='white', width=0.6)
+    ax.bar(story_counts.index.astype(str), story_counts.values, color='#9CC3D5FF', width=0.6)
 
     # Style
-    ax.set_title("Ratings for Acting / Performance", color='white')
-    ax.set_ylabel("Votes", color='white')
+    ax.set_title("Ratings for Acting / Performance", color='black')
+    ax.set_ylabel("Votes", color='#9CC3D5FF')
     ax.set_facecolor(background_color)
     fig.patch.set_facecolor(background_color)
     ax.set_ylim(0, story_counts.values.max() + 5)
-    ax.tick_params(colors='white')
-    ax.xaxis.label.set_color('white')
-    ax.yaxis.label.set_color('white')
-    ax.title.set_color('white')
+    ax.tick_params(colors='#9CC3D5FF')
+    ax.xaxis.label.set_color('#9CC3D5FF')
+    ax.yaxis.label.set_color('#9CC3D5FF')
+    ax.title.set_color('#9CC3D5FF')
     for spine in ax.spines.values():
         spine.set_edgecolor('#2e2e2e')
 
@@ -317,18 +342,18 @@ with main_col63:
 
     # Tracer l'histogramme
     fig, ax = plt.subplots(figsize=(6, 3))
-    ax.bar(story_counts.index.astype(str), story_counts.values, color='white', width=0.6)
+    ax.bar(story_counts.index.astype(str), story_counts.values, color='#F5C7B8FF', width=0.6)
 
     # Style
-    ax.set_title("Ratings for Visuals / Cinematography", color='white')
-    ax.set_ylabel("Votes", color='white')
+    ax.set_title("Ratings for Visuals / Cinematography", color='black')
+    ax.set_ylabel("Votes", color='#F5C7B8FF')
     ax.set_facecolor(background_color)
     fig.patch.set_facecolor(background_color)
     ax.set_ylim(0, story_counts.values.max() + 5)
-    ax.tick_params(colors='white')
-    ax.xaxis.label.set_color('white')
-    ax.yaxis.label.set_color('white')
-    ax.title.set_color('white')
+    ax.tick_params(colors='#F5C7B8FF')
+    ax.xaxis.label.set_color('#F5C7B8FF')
+    ax.yaxis.label.set_color('#F5C7B8FF')
+    ax.title.set_color('#F5C7B8FF')
     for spine in ax.spines.values():
         spine.set_edgecolor('#2e2e2e')
 
@@ -348,18 +373,18 @@ with main_col71:
 
     # Tracer l'histogramme
     fig, ax = plt.subplots(figsize=(6, 3))
-    ax.bar(story_counts.index.astype(str), story_counts.values, color='white', width=0.6)
+    ax.bar(story_counts.index.astype(str), story_counts.values, color='goldenrod', width=0.6)
 
     # Style
-    ax.set_title("Ratings for Music / Sounds", color='white')
-    ax.set_ylabel("Votes", color='white')
+    ax.set_title("Ratings for Music / Sounds", color='black')
+    ax.set_ylabel("Votes", color='goldenrod')
     ax.set_facecolor(background_color)
     fig.patch.set_facecolor(background_color)
     ax.set_ylim(0, story_counts.values.max() + 5)
-    ax.tick_params(colors='white')
-    ax.xaxis.label.set_color('white')
-    ax.yaxis.label.set_color('white')
-    ax.title.set_color('white')
+    ax.tick_params(colors='goldenrod')
+    ax.xaxis.label.set_color('goldenrod')
+    ax.yaxis.label.set_color('goldenrod')
+    ax.title.set_color('goldenrod')
     for spine in ax.spines.values():
         spine.set_edgecolor('#2e2e2e')
 
@@ -376,18 +401,18 @@ with main_col72:
 
     # Tracer l'histogramme
     fig, ax = plt.subplots(figsize=(6, 3))
-    ax.bar(story_counts.index.astype(str), story_counts.values, color='white', width=0.6)
+    ax.bar(story_counts.index.astype(str), story_counts.values, color='darkorchid', width=0.6)
 
     # Style
-    ax.set_title("Ratings for Values / Entertainment", color='white')
-    ax.set_ylabel("Votes", color='white')
+    ax.set_title("Ratings for Values / Entertainment", color='black')
+    ax.set_ylabel("Votes", color='darkorchid')
     ax.set_facecolor(background_color)
     fig.patch.set_facecolor(background_color)
     ax.set_ylim(0, story_counts.values.max() + 5)
-    ax.tick_params(colors='white')
-    ax.xaxis.label.set_color('white')
-    ax.yaxis.label.set_color('white')
-    ax.title.set_color('white')
+    ax.tick_params(colors='darkorchid')
+    ax.xaxis.label.set_color('darkorchid')
+    ax.yaxis.label.set_color('darkorchid')
+    ax.title.set_color('darkorchid')
     for spine in ax.spines.values():
         spine.set_edgecolor('#2e2e2e')
 
