@@ -89,15 +89,12 @@ Launch the installation script with `chmod +x ./setup/install_dependencies.sh &&
 3. Sets up the database (with `setup/db_init.py`)
 4. Launches the scheduler to scrap and analyze reviews on a hourly basis (its state can be checked with `pgrep -fl scheduler.py`)
 
-### :wheel_of_dharma: With Kubernetes (for production)
+### :kubernetes: With Kubernetes (for production)
 - Store the `OPENAI_API_KEY` in an `.env` file or the Datalab.
 - Launch a Jupyter or VSCode service **with edit rights** (and **access to the vault** if the `OPENAI_API_KEY` is stored there).
 - Run `chmod +x ./setup/create_db.sh && source ./setup/create_db.sh` to launch a PostgrelSQL pod with random passwords.
 - Run `chmod +x ./setup/create_kubectl_secrets.sh && source ./setup/create_kubectl_secrets.sh` to register the credentials in the Kubernetes environment.
-- Run `kubectl apply -R -f deployment/` to deploy 3 separate pods:
-  - For scraping and analyzing reviews
-  - For the API
-  - For the dashboard
+- Run `kubectl apply -R -f deployment/` to deploy 3 separate pods: for scraping and analyzing reviews, for the API, and for the dashboard.
 
 ### :whale: With Docker (for enjoyment)
 A `docker-compose.yml` is provided which runs the tracker, the dashboard, the API, and the database as distinct services. The secrets must be set as environment variables, including parameters for the backup on S3 which can be retrieved [here](https://datalab.sspcloud.fr/account/storage). Then with some luck, everything should run...
