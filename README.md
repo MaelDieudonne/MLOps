@@ -43,6 +43,8 @@ app/
 │   ├── backend.log
 │   └── frontend.log
 ├── notebooks/
+├── pages/
+│   └── dashboard.py
 ├── setup/
 │   ├── create_db.sh
 │   ├── create_kubectl_secrets.sh
@@ -61,7 +63,7 @@ app/
 ├── test/
 │       ├── backup_test.py
 │       └── connection_test.py
-├── dashboard.py
+├── homz.py
 ├── main.py
 └── scheduler.py</pre>
 

@@ -179,16 +179,10 @@ class PostgreSQLDatabase:
             self.cursor.executemany(insert_query, data)
             self.connection.commit()
             prompt = "1 row" if len(data) == 1 else f"{len(data)} rows"
-            if movie_id:
-                logger.debug(f"{movie_id} - Inserted {prompt} into {table_name}")
-            else:
-                logger.debug(f"Inserted {prompt} into {table_name}")
-        except (Exception, psycopg.Error) as error:
+            logger.debug(f"{movie_id + ' - ' if movie_id else ''}Inserted {prompt} into {table_name}")
+        except (Exception, psycopg.Error) as e:
             self.connection.rollback()
-            if movie_id:
-                logger.error(f"{movie_id} - Failed inserting data: {error} ({str(error)})")
-            else:
-                logger.error(f"Failed inserting data: {error} ({str(error)})")
+            logger.error(f"{movie_id + ' - ' if movie_id else ''}Failed inserting data: {e}")
 
 
     def remove_data(self, table_name, condition_column, condition_value, movie_id=None):
@@ -207,16 +201,10 @@ class PostgreSQLDatabase:
             row_count = self.cursor.rowcount
             self.connection.commit()
             prompt = "1 row" if row_count == 1 else f"{row_count} rows"
-            if movie_id:
-                logger.debug(f"{movie_id} - Deleted {prompt} from {table_name} where {condition_column} = {condition_value}")
-            else:
-                logger.debug(f"Deleted {prompt} from {table_name} where {condition_column} = {condition_value}")
-        except (Exception, psycopg.Error) as error:
+            logger.debug(f"{movie_id + ' - ' if movie_id else ''}Deleted {prompt} from {table_name} where {condition_column} = {condition_value}")
+        except (Exception, psycopg.Error) as e:
             self.connection.rollback()
-            if movie_id:
-                logger.error(f"{movie_id} - Failed deleting data: {error}")
-            else:
-                logger.error(f"Failed deleting data: {error}")
+            logger.error(f"{movie_id + ' - ' if movie_id else ''}Failed deleting data: {e}")
 
 
     def query_raw(self, query, movie_id=None):
@@ -232,9 +220,9 @@ class PostgreSQLDatabase:
             results = self.cursor.fetchall()
             logger.debug(f"{movie_id + ' - ' if movie_id else ''}Executed raw query: {query}")
             return results
-        except (Exception, psycopg.Error) as error:
+        except (Exception, psycopg.Error) as e:
             self.connection.rollback()
-            logger.error(f"{movie_id + ' - ' if movie_id else ''}Failed raw SQL query: {error}")
+            logger.error(f"{movie_id + ' - ' if movie_id else ''}Failed raw SQL query: {e}")
             return []
 
 
@@ -267,13 +255,9 @@ class PostgreSQLDatabase:
             results = self.cursor.fetchall()
             return results
             
-        except (Exception, psycopg.Error) as error:
+        except (Exception, psycopg.Error) as e:
             self.connection.rollback()
-            if movie_id:
-                logger.error(f"{movie_id} - Failed querying data: {error}")
-            else:
-                logger.error(f"Failed querying data: {error}")
-            return []
+            logger.error(f"{movie_id + ' - ' if movie_id else ''}Failed querying data: {e}")
 
 
 ######################################
@@ -298,9 +282,9 @@ class PostgreSQLDatabase:
             self.cursor.executemany(query, data)
             self.connection.commit()
             logger.info(f"{movie_id} - Upserted metadata successfully")
-        except (Exception, psycopg.Error) as error:
+        except (Exception, psycopg.Error) as e:
             self.connection.rollback()
-            logger.error(f"{movie_id} - Failed upserting metadata: {error}")
+            logger.error(f"{movie_id} - Failed upserting metadata: {e}")
 
 
     def upsert_review_data(self, data, movie_id):
@@ -324,9 +308,9 @@ class PostgreSQLDatabase:
             self.cursor.executemany(query, data)
             self.connection.commit()
             logger.info(f"{movie_id} - Upserted reviews successfully")
-        except (Exception, psycopg.Error) as error:
+        except (Exception, psycopg.Error) as e:
             self.connection.rollback()
-            logger.error(f"{movie_id} - Failed upserting reviews: {error}")
+            logger.error(f"{movie_id} - Failed upserting reviews: {e}")
 
 
     def update_sentiment_data(self, data, movie_id):
@@ -347,9 +331,9 @@ class PostgreSQLDatabase:
                 update_assignments)
             self.cursor.executemany(insert_query, data)
             self.connection.commit()
-        except (Exception, psycopg.Error) as error:
+        except (Exception, psycopg.Error) as e:
             self.connection.rollback()
-            logger.error(f"{movie_id} - Failed updating sentiment data: {error}")
+            logger.error(f"{movie_id} - Failed updating sentiment data: {e}")
 
 
     def reset_indicator(self, author, movie_id):
@@ -358,6 +342,6 @@ class PostgreSQLDatabase:
             self.cursor.execute(query, (author,))
             self.connection.commit()
             logger.debug(f"{movie_id} - Reseted indicator for review by {author}")
-        except (Exception, psycopg.Error) as error:
+        except (Exception, psycopg.Error) as e:
             self.connection.rollback()
-            logger.error(f"{movie_id} - Failed resetting process indicator for review by {author}: {error}")
+            logger.error(f"{movie_id} - Failed resetting process indicator for review by {author}: {e}")

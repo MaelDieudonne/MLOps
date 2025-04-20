@@ -19,9 +19,9 @@ def health():
 def read_root():
     """
     Movie Reviews Analysis API
-    
+
     This API provides access to movie metadata and sentiment analysis of reviews.
-    
+
     Available endpoints:
     - /movies/{movie_id}: Get basic movie metadata
     - /movies/{movie_id}/stats: Get detailed sentiment analysis of movie reviews
@@ -57,7 +57,7 @@ def get_movie(movie_id: str):
 def get_movie_stats(movie_id: str):
     try:
         query = """
-            SELECT 
+            SELECT
                 m.movie_id,
                 m.title,
                 m.release_date,
@@ -110,26 +110,26 @@ def get_movie_stats(movie_id: str):
                 COUNT(CASE WHEN rs.overall = 1 THEN 1 END) AS overall_pos1,
                 COUNT(CASE WHEN rs.overall = 2 THEN 1 END) AS overall_pos2,
                 COUNT(CASE WHEN rs.overall IS NULL THEN 1 END) AS overall_null
-            FROM 
+            FROM
                 movies m
-            LEFT JOIN 
+            LEFT JOIN
                 reviews_raw rr ON m.movie_id = rr.movie_id
-            LEFT JOIN 
+            LEFT JOIN
                 reviews_sentiments rs ON rr.author = rs.author
-            WHERE 
+            WHERE
                 m.movie_id = %s
-            GROUP BY 
+            GROUP BY
                 m.movie_id, m.title, m.release_date, m.nb_reviews
         """
-        
+
         with PostgreSQLDatabase() as db:
             movie_stats = pd.read_sql(query, db.connection, params=(movie_id,))
-            
+
         if movie_stats.empty:
             raise HTTPException(status_code=404, detail="Movie statistics not found")
-            
+
         # Convert DataFrame to dictionary for JSON response
         return {"movie_stats": movie_stats.to_dict(orient="records")[0]}
-    
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

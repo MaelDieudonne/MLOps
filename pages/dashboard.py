@@ -1,9 +1,14 @@
-import streamlit as st
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
+import streamlit as st
+
 from src.utils.db import PostgreSQLDatabase
-import logging
+from src.utils.logger import setup_logging, get_frontend_logger
+
+setup_logging()
+logger = get_frontend_logger()
+
 
 if "selected_movie" not in st.session_state:
     st.warning("Please choose a movie first.")
@@ -13,11 +18,9 @@ movie_id = st.session_state["selected_movie"]
 
 st.set_page_config(layout="wide")
 
-# Configuration du logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 with PostgreSQLDatabase() as db:
-    logging.info("Connexion à la base de données PostgreSQL établie.")
+    logger.info("Connexion à la base de données PostgreSQL établie.")
 
     # Récupération des données du film
     query = f"""
@@ -29,7 +32,7 @@ with PostgreSQLDatabase() as db:
     data_columns = ['movie_id', 'title', 'release_date']
     df_data = pd.DataFrame(movie_data, columns=data_columns)
 
-    logging.info(f"{len(movie_data)} enregistrements récupérés depuis la table 'movies' pour le movie_id '{movie_id}'.")
+    logger.info(f"{len(movie_data)} enregistrements récupérés depuis la table 'movies' pour le movie_id '{movie_id}'.")
 
     query = f"""
         SELECT s.review_id, s.story, s.acting, s.visuals, s.sounds, s.values, s.overall, r.date
@@ -37,21 +40,24 @@ with PostgreSQLDatabase() as db:
         JOIN reviews_raw r ON s.review_id = r.review_id
         WHERE r.movie_id = '{movie_id}'
     """
-    
+
     sentiments = db.query_raw(query)
-    logging.info(f"{len(sentiments)} entrées récupérées depuis la table 'reviews_sentiments'.")
+    logger.info(f"{len(sentiments)} entrées récupérées depuis la table 'reviews_sentiments'.")
 
     # Création du DataFrame sentiments
-    sents_columns = ['id','story', 'acting', 'visuals', 'sounds', 'values', 'overall','date']
+    sents_columns = ['id', 'story', 'acting', 'visuals', 'sounds', 'values', 'overall', 'date']
     df_sents = pd.DataFrame(sentiments, columns=sents_columns)
-    logging.info(f"DataFrame des sentiments créé avec {df_sents.shape[0]} lignes et {df_sents.shape[1]} colonnes.")
+    logger.info(f"DataFrame des sentiments créé avec {df_sents.shape[0]} lignes et {df_sents.shape[1]} colonnes.")
 
 cols = ['story', 'acting', 'visuals', 'sounds', 'values', 'overall']
 averages = df_sents[cols].mean(skipna=True).tolist()
-movie_title = movie_data[0][1]  # Le titre du film
+movie_title = movie_data[0][1]
+
+
+backgound_color = '#D3D3D3'
 
 # Ajouter du CSS personnalisé
-st.markdown("""
+st.markdown(f"""
     <style>
         /* Réduire les espaces au-dessus du titre */
         .css-1d391kg {
@@ -66,7 +72,7 @@ st.markdown("""
         /* Réduire l'espace de la barre contenant le bouton Deploy */
         header {
             padding: 0px 0px;
-            height: 0px;  /* Ajustez la hauteur de la barre en fonction de vos besoins */
+            height: 0px;
         }
 
         /* Réduire l'espace en bas de la page */
@@ -76,7 +82,7 @@ st.markdown("""
 
         /* Style de fond du dashboard */
         .main .block-container {
-            background-color: #111217;  /* Couleur de fond gris foncé */
+            background-color: {backgound_color};
         }
     </style>
 """, unsafe_allow_html=True)
@@ -86,10 +92,13 @@ st.markdown("""
 empty_col10, main_col11, empty_col12, main_col13, empty_col14 = st.columns([3, 3, 6, 3, 3])  # Colonnes avec marges vides
 
 with main_col11:
-    st.title(movie_title)
+    # st.title(movie_title)
+    st.markdown(f"<h1 style='text-align: center;'>{movie_title}</h1>", unsafe_allow_html=True)
 
 with main_col13:
-    st.title(str(df_sents.shape[0])+" reviews")
+    # st.title(str(df_sents.shape[0])+" reviews")
+    review_count = df_sents.shape[0]
+    st.markdown(f"<h2 style='text-align: center;'>{review_count} reviews</h2>", unsafe_allow_html=True)
 
 # Deuxième ligne : image et radar
 empty_col20, main_col21, empty_col22, main_col23, empty_col24 = st.columns([3, 5, 1, 5, 3])  # Colonnes avec marges vides
@@ -97,7 +106,7 @@ empty_col20, main_col21, empty_col22, main_col23, empty_col24 = st.columns([3, 5
 with main_col21:
     # Section 1 - Image
     st.image(f"data/covers/{movie_id}.jpg", width=330)
-    
+
 with main_col23:
     # Section 2 - Radar avec les évaluations du film
     labels = ['story', 'acting', 'visuals', 'sounds', 'values']
@@ -115,8 +124,8 @@ with main_col23:
     fig, ax = plt.subplots(figsize=(6, 6), subplot_kw=dict(polar=True))
 
     # Appliquer le même fond que les autres graphiques
-    ax.set_facecolor('#111217')  # Fond du graphique radar
-    fig.patch.set_facecolor('#111217')  # Fond autour du graphique
+    ax.set_facecolor(backgound_color)  # Fond du graphique radar
+    fig.patch.set_facecolor(backgound_color)  # Fond autour du graphique
 
     ax.plot(angles, notes, 'o-', linewidth=2, color='blue')
     ax.fill(angles, notes, alpha=0.25, color='blue')
@@ -154,10 +163,14 @@ with main_col23:
 empty_col30, main_col31, empty_col32, main_col33, empty_col34 = st.columns([2, 3, 4, 3, 2])  # Colonnes avec marges vides
 
 with main_col31:
-    st.title(str(pd.to_datetime(df_data['release_date'].iloc[0]).strftime('%Y-%m-%d')))
+    # st.title(f"Release date: {pd.to_datetime(df_data['release_date'].iloc[0]).strftime('%Y-%m-%d')}")
+    release_date = pd.to_datetime(df_data['release_date'].iloc[0]).strftime('%Y-%m-%d')
+    st.markdown(f"<h1 style='text-align: center;'>Release date: {release_date}</h1>", unsafe_allow_html=True)
 
 with main_col33:
-    st.title("Note : "+str(round(averages[5], 2)))
+    # st.title(f"Overall sentiment: {(round(averages[5], 2}")
+    avg_rating = round(averages[5], 2)
+    st.markdown(f"<h2 style='text-align: center;'>Average rating {avg_rating}</h2>", unsafe_allow_html=True)
 
 # Quatrième ligne : publication date
 empty_col40, main_col41, empty_col42 = st.columns([2, 7, 2])  # Colonnes avec marges vides
@@ -175,8 +188,8 @@ with main_col41:
     # Tracer l'histogramme
     fig, ax = plt.subplots(figsize=(10, 3))
     ax.bar(range(len(hist_data)), hist_data.values, color='white')
-    ax.set_facecolor('#111217')
-    fig.patch.set_facecolor('#111217')
+    ax.set_facecolor(backgound_color)
+    fig.patch.set_facecolor(backgound_color)
     ax.set_xticks(range(len(hist_data)))
     ax.set_xticklabels([str(interval.left.date()) for interval in hist_data.index], rotation=45, ha='right', color='white')
     ax.set_title("Number of review per time periods", color='white')
@@ -191,7 +204,7 @@ with main_col41:
 
 # Cinquième ligne : publication date
 empty_col50, main_col51, empty_col52 = st.columns([2, 7, 2])  # Colonnes avec marges vides
-    
+
 with main_col51:
     # S'assurer que la colonne date est bien en datetime
     df_sents['date'] = pd.to_datetime(df_sents['date'])
@@ -220,8 +233,8 @@ with main_col51:
 
     # Style du graphique
     ax.set_title("Average rating per time periods", color='white')
-    ax.set_facecolor('#111217')
-    fig.patch.set_facecolor('#111217')
+    ax.set_facecolor(backgound_color)
+    fig.patch.set_facecolor(backgound_color)
     ax.tick_params(colors='white')
     ax.xaxis.label.set_color('white')
     ax.yaxis.label.set_color('white')
@@ -236,7 +249,7 @@ with main_col51:
 
 # Sixième ligne : publication date
 empty_col60, main_col61, main_col62, main_col63, empty_col64 = st.columns([2, 4, 4, 4, 2])  # Colonnes avec marges vides
-    
+
 with main_col61:
     # Créer les catégories de notes (-2 à 2)
     story_bins = [-2, -1.5, -0.5, 0.5, 1.5, 2]  # Pour avoir 5 classes : -2, -1, 0, 1, 2
@@ -253,8 +266,8 @@ with main_col61:
     # Style
     ax.set_title("Ratings : Story", color='white')
     ax.set_ylabel("Votes", color='white')
-    ax.set_facecolor('#111217')
-    fig.patch.set_facecolor('#111217')
+    ax.set_facecolor(backgound_color)
+    fig.patch.set_facecolor(backgound_color)
     ax.set_ylim(0, story_counts.values.max() + 5)
     ax.tick_params(colors='white')
     ax.xaxis.label.set_color('white')
@@ -281,8 +294,8 @@ with main_col62:
     # Style
     ax.set_title("Ratings : Acting", color='white')
     ax.set_ylabel("Votes", color='white')
-    ax.set_facecolor('#111217')
-    fig.patch.set_facecolor('#111217')
+    ax.set_facecolor(backgound_color)
+    fig.patch.set_facecolor(backgound_color)
     ax.set_ylim(0, story_counts.values.max() + 5)
     ax.tick_params(colors='white')
     ax.xaxis.label.set_color('white')
@@ -309,8 +322,8 @@ with main_col63:
     # Style
     ax.set_title("Ratings : Visuals", color='white')
     ax.set_ylabel("Votes", color='white')
-    ax.set_facecolor('#111217')
-    fig.patch.set_facecolor('#111217')
+    ax.set_facecolor(backgound_color)
+    fig.patch.set_facecolor(backgound_color)
     ax.set_ylim(0, story_counts.values.max() + 5)
     ax.tick_params(colors='white')
     ax.xaxis.label.set_color('white')
@@ -323,7 +336,7 @@ with main_col63:
 
 # Sixième ligne : publication date
 empty_col70, main_col71, main_col72, empty_col73 = st.columns([4, 4, 4, 4])  # Colonnes avec marges vides
-    
+
 with main_col71:
     # Créer les catégories de notes (-2 à 2)
     story_bins = [-2, -1.5, -0.5, 0.5, 1.5, 2]  # Pour avoir 5 classes : -2, -1, 0, 1, 2
@@ -340,8 +353,8 @@ with main_col71:
     # Style
     ax.set_title("Ratings : Sounds", color='white')
     ax.set_ylabel("Votes", color='white')
-    ax.set_facecolor('#111217')
-    fig.patch.set_facecolor('#111217')
+    ax.set_facecolor(backgound_color)
+    fig.patch.set_facecolor(backgound_color)
     ax.set_ylim(0, story_counts.values.max() + 5)
     ax.tick_params(colors='white')
     ax.xaxis.label.set_color('white')
@@ -368,8 +381,8 @@ with main_col72:
     # Style
     ax.set_title("Ratings : Values", color='white')
     ax.set_ylabel("Votes", color='white')
-    ax.set_facecolor('#111217')
-    fig.patch.set_facecolor('#111217')
+    ax.set_facecolor(backgound_color)
+    fig.patch.set_facecolor(backgound_color)
     ax.set_ylim(0, story_counts.values.max() + 5)
     ax.tick_params(colors='white')
     ax.xaxis.label.set_color('white')
@@ -379,4 +392,3 @@ with main_col72:
         spine.set_edgecolor('#2e2e2e')
 
     st.pyplot(fig)
-
