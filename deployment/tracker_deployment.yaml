@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: movie-reviews-tracker
-        image: maeldieudonne/mlops:testap60
+        image: maeldieudonne/mlops:testap62
         command: ["/bin/bash", "-c"]
         args:
         - |
