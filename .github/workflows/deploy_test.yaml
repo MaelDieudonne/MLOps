@@ -25,4 +25,4 @@ jobs:
             -t maeldieudonne/mlops:testap58 .
 
       - name: Push Docker image
-        run: docker push maeldieudonne/mlops:testap57
+        run: docker push maeldieudonne/mlops:testap58
