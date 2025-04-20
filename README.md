@@ -95,7 +95,7 @@ Launch the installation script with `chmod +x ./setup/install_dependencies.sh &&
   - For the dashboard
 
 ### With Docker (for enjoyment)
-A `docker-compose.yml` is provided which runs the tracker, the database and the dashboard as distinct services. The secrets must be set as environment variables, including parameters for the backup on S3 which can be retrieved [here](https://datalab.sspcloud.fr/account/storage). Then with some luck, everything should run...
+A `docker-compose.yml` is provided which runs the tracker, the dashboard, the API, and the database as distinct services. The secrets must be set as environment variables, including parameters for the backup on S3 which can be retrieved [here](https://datalab.sspcloud.fr/account/storage). Then with some luck, everything should run...
 
 ### Manage movies
 They can be added or removed from the terminal with `poetry run python -m src.manage_movies --add '<movie_id_1>' '<movie_id_2>' --remove '<movie_id_3>'` (where `<movie_id>` must be retrieved manually from IMDb, e.g., `tt0033467` for [Citizen Kane](https://www.imdb.com/title/tt0033467/?ref_=fn_all_ttl_1)).
@@ -163,8 +163,10 @@ With Streamlit. Includes...
 *=> Integrated to streamlit? With an admin console to track users?*
 
 ## 3. Possible improvements
+- Have a better looking dashboard
 - Add an admin interface to the dashboard allowing to monitor the backend (including API costs) and manage users
 - Fully separate the backend and frontend, using an API to communicate between them (with permissions depending on users)
 - Use `playwright` for scraping, which is more flexible than Selenium
 - Automate deployment with `argo CD`
-- Implement more tests...
+- Implement more tests
+- ...
