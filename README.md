@@ -3,7 +3,7 @@ This project tracks the reception of movies based on user reviews published on [
 
 ## :construction: Pre-Production User Management — Branch Overview
 
-This branch hosts a pre-production version of the user management system. It is working but has not been tested extensively enough to make it into production.
+This branch hosts a pre-production version of the user management system. It is functional but has not yet been tested extensively enough to be considered production-ready.
 
 It allows users to register and create an account to access the dashboard, with role-based permissions available:
 - **Viewer** — limited access, read-only.
@@ -12,7 +12,6 @@ It allows users to register and create an account to access the dashboard, with 
 Once logged in, users can update their personal information, such as their first name, last name, and password.
 
 If you are logged in as an admin, you also have the ability to edit other users’ details — except for their passwords, which only the users themselves can change.
-Test Credentials
 
 A test account is available for demonstration purposes:
 - :bust_in_silhouette: Username: `rbriggs`
