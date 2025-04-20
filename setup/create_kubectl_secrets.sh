@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define the name of the Kubernetes Secret
-SECRET_NAME="movie-reviews-credentials"
+SECRET_NAME="test-movie-reviews-credentials"
 
 # Source values from the corresponding environment variable.
 declare -A CREDENTIALS=(

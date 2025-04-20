@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: movie-reviews-tracker-deployment
+  name: test-movie-reviews-tracker-deployment
   labels:
-    app: movie-reviews-tracker
+    app: test-movie-reviews-tracker
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: movie-reviews-tracker
+      app: test-movie-reviews-tracker
   template:
     metadata:
       labels:
-        app: movie-reviews-tracker
+        app: test-movie-reviews-tracker
     spec:
       containers:
-      - name: movie-reviews-tracker
+      - name: test-movie-reviews-tracker
         image: maeldieudonne/mlops:test
         command: ["/bin/bash", "-c"]
         args:
@@ -24,4 +24,4 @@ spec:
           poetry run python scheduler.py
         envFrom:
         - secretRef:
-            name: movie-reviews-credentials
+            name: test-movie-reviews-credentials

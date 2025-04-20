@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: movie-reviews-ingress
+  name: test-movie-reviews-ingress
   annotations:
     nginx.ingress.kubernetes.io/enable-websockets: "true"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
@@ -21,7 +21,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: movie-reviews-dashboard-service
+                name: test-movie-reviews-dashboard-service
                 port:
                   number: 80
     - host: test-api-movie-reviews-tracker.lab.sspcloud.fr
@@ -31,6 +31,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: movie-reviews-api-service
+                name: test-movie-reviews-api-service
                 port:
                   number: 80

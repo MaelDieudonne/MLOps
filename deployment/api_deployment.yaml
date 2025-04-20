@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: movie-reviews-api-deployment
+  name: test-movie-reviews-api-deployment
   labels:
-    app: movie-reviews-api
+    app: test-movie-reviews-api
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: movie-reviews-api
+      app: test-movie-reviews-api
   template:
     metadata:
       labels:
-        app: movie-reviews-api
+        app: test-movie-reviews-api
     spec:
       containers:
-      - name: movie-reviews-api
+      - name: test-movie-reviews-api
         image: maeldieudonne/mlops:test
         ports:
         - containerPort: 8001
@@ -23,7 +23,7 @@ spec:
         args: ["src.api:app", "--host", "0.0.0.0", "--port", "8001"]
         envFrom:
         - secretRef:
-            name: movie-reviews-credentials
+            name: test-movie-reviews-credentials
         livenessProbe:
           httpGet:
             path: /health
