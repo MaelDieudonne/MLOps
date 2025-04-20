@@ -206,10 +206,11 @@ class PostgreSQLDatabase:
             self.connection.rollback()
             logger.error(f"{movie_id + ' - ' if movie_id else ''}Failed deleting data: {e}")
 
-     def query_movie(self, movie_id):
+
+    def query_movie(self, movie_id):
         """
         Execute a SQL query and return movie_id, titl and release date
-        
+
         :param movie_id: Optional movie ID for logging
         :return: List of rows (as tuples)
         """
@@ -227,6 +228,7 @@ class PostgreSQLDatabase:
             self.connection.rollback()
             logger.error(f"{movie_id + ' - '}Failed SQL query: {error}")
             return []
+
 
     def query_sents(self, movie_id):
         """
@@ -250,6 +252,7 @@ class PostgreSQLDatabase:
             self.connection.rollback()
             logger.error(f"{movie_id + ' - '}Failed SQL query: {error}")
             return []
+
 
     def query_raw(self, query, movie_id=None):
         """

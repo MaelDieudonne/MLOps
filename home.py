@@ -1,9 +1,12 @@
+import os
+import random
 import streamlit as st
+
+from PIL import Image
 from src.utils.db import PostgreSQLDatabase
 from src.utils.logger import setup_logging, get_frontend_logger
-import random
-import os
-from PIL import Image
+from src.utils.s3 import s3
+
 
 setup_logging()
 logger = get_frontend_logger()
@@ -22,6 +25,9 @@ search_query = st.text_input("Search with movie title")
 if search_query:
     movie_list = get_movie_titles()
     filtered = [movie for movie in movie_list if search_query.lower() in movie[1].lower()]
+
+    s3 = s3()
+    s3.retrieve_cover(movie_id)
 
     if filtered:
         for movie_id, title in filtered:
