@@ -1,6 +1,7 @@
 import base64
 import matplotlib.pyplot as plt
 import numpy as np
+from PIL import Image
 import os
 import pandas as pd
 import streamlit as st
@@ -90,11 +91,12 @@ empty_col20, main_col21, empty_col22, main_col23, empty_col24 = st.columns([3, 5
 
 with main_col21:
     # Section 1 - Image
-    st.markdown(f"""
-        <div style='text-align: center;'>
-            <img src='data/covers/{movie_id}.jpg' width='330'/>
-        </div>
-    """, unsafe_allow_html=True)
+    cover_path = f"data/covers/{movie_id}.jpg"
+    if os.path.exists(cover_path):
+        img = Image.open(cover_path)
+        st.image(img, width=330)
+    else:
+        st.warning("Cover not found")
 
 with main_col23:
     # Section 2 - Radar avec les évaluations du film
@@ -223,7 +225,7 @@ with main_col51:
 
     # Tracer l’histogramme
     fig, ax = plt.subplots(figsize=(10, 3))
-    ax.bar(grouped.index.astype(str), grouped.values - (-2), color='#0063B2FF', width=0.8, bottom=-2)
+    ax.bar(grouped.index.astype(str), grouped.values - (-2), color='#0063B2FF', width=0.8)
 
     # Axe x formaté avec dates lisibles
     ax.set_xticks(range(len(grouped)))
@@ -242,7 +244,7 @@ with main_col51:
     ax.xaxis.label.set_color('#0063B2FF')
     ax.yaxis.label.set_color('#0063B2FF')
     ax.title.set_color('#0063B2FF')
-    ax.set_ylim(-2, 2)
+    ax.set_ylim(0, 10)
 
     # Bordures
     for spine in ax.spines.values():
@@ -254,143 +256,110 @@ with main_col51:
 empty_col60, main_col61, main_col62, main_col63, empty_col64 = st.columns([2, 4, 4, 4, 2])  # Colonnes avec marges vides
 
 with main_col61:
-    # Créer les catégories de notes (-2 à 2)
-    story_bins = [-2.5, -1.5, -0.5, 0.5, 1.5, 2.5]  # Pour avoir 5 classes : -2, -1, 0, 1, 2
+    story_bins = [-2.5, -1.5, -0.5, 0.5, 1.5, 2.5]
     story_labels = [-2, -1, 0, 1, 2]
     df_sents['story_cat'] = pd.cut(df_sents['story'], bins=story_bins, labels=story_labels)
-
-    # Compter le Votes pour chaque note
     story_counts = df_sents['story_cat'].value_counts().sort_index()
 
-    # Tracer l'histogramme
     fig, ax = plt.subplots(figsize=(6, 3))
-    ax.bar(story_counts.index.astype(str), story_counts.values, color='#97BC62FF', width=0.6)
+    ax.bar(story_counts.index.astype(str), story_counts.values, color='#6A9148', width=0.6)
 
-    # Style
     ax.set_title("Ratings for Narrative / Storyline", color='black')
-    ax.set_ylabel("Votes", color='#97BC62FF')
+    ax.set_ylabel("Votes", color='#6A9148')
     ax.set_facecolor(background_color)
     fig.patch.set_facecolor(background_color)
     ax.set_ylim(0, story_counts.values.max() + 5)
-    ax.tick_params(colors='#97BC62FF')
-    ax.xaxis.label.set_color('#97BC62FF')
-    ax.yaxis.label.set_color('#97BC62FF')
-    ax.title.set_color('#97BC62FF')
+    ax.tick_params(colors='#6A9148')
+    ax.xaxis.label.set_color('#6A9148')
+    ax.yaxis.label.set_color('#6A9148')
+    ax.title.set_color('#6A9148')
     for spine in ax.spines.values():
         spine.set_edgecolor('#2e2e2e')
 
     st.pyplot(fig)
 
 with main_col62:
-    # Créer les catégories de notes (-2 à 2)
-    story_bins = [-2.5, -1.5, -0.5, 0.5, 1.5, 2.5]  # Pour avoir 5 classes : -2, -1, 0, 1, 2
-    story_labels = [-2, -1, 0, 1, 2]
     df_sents['acting_cat'] = pd.cut(df_sents['acting'], bins=story_bins, labels=story_labels)
-
-    # Compter le Votes pour chaque note
     story_counts = df_sents['acting_cat'].value_counts().sort_index()
 
-    # Tracer l'histogramme
     fig, ax = plt.subplots(figsize=(6, 3))
-    ax.bar(story_counts.index.astype(str), story_counts.values, color='#9CC3D5FF', width=0.6)
+    ax.bar(story_counts.index.astype(str), story_counts.values, color='#588CA5', width=0.6)
 
-    # Style
     ax.set_title("Ratings for Acting / Performance", color='black')
-    ax.set_ylabel("Votes", color='#9CC3D5FF')
+    ax.set_ylabel("Votes", color='#588CA5')
     ax.set_facecolor(background_color)
     fig.patch.set_facecolor(background_color)
     ax.set_ylim(0, story_counts.values.max() + 5)
-    ax.tick_params(colors='#9CC3D5FF')
-    ax.xaxis.label.set_color('#9CC3D5FF')
-    ax.yaxis.label.set_color('#9CC3D5FF')
-    ax.title.set_color('#9CC3D5FF')
+    ax.tick_params(colors='#588CA5')
+    ax.xaxis.label.set_color('#588CA5')
+    ax.yaxis.label.set_color('#588CA5')
+    ax.title.set_color('#588CA5')
     for spine in ax.spines.values():
         spine.set_edgecolor('#2e2e2e')
 
     st.pyplot(fig)
 
 with main_col63:
-    # Créer les catégories de notes (-2 à 2)
-    story_bins = [-2.5, -1.5, -0.5, 0.5, 1.5, 2.5]  # Pour avoir 5 classes : -2, -1, 0, 1, 2
-    story_labels = [-2, -1, 0, 1, 2]
     df_sents['visuals_cat'] = pd.cut(df_sents['visuals'], bins=story_bins, labels=story_labels)
-
-    # Compter le Votes pour chaque note
     story_counts = df_sents['visuals_cat'].value_counts().sort_index()
 
-    # Tracer l'histogramme
     fig, ax = plt.subplots(figsize=(6, 3))
-    ax.bar(story_counts.index.astype(str), story_counts.values, color='#F5C7B8FF', width=0.6)
+    ax.bar(story_counts.index.astype(str), story_counts.values, color='#C88D7B', width=0.6)
 
-    # Style
     ax.set_title("Ratings for Visuals / Cinematography", color='black')
-    ax.set_ylabel("Votes", color='#F5C7B8FF')
+    ax.set_ylabel("Votes", color='#C88D7B')
     ax.set_facecolor(background_color)
     fig.patch.set_facecolor(background_color)
     ax.set_ylim(0, story_counts.values.max() + 5)
-    ax.tick_params(colors='#F5C7B8FF')
-    ax.xaxis.label.set_color('#F5C7B8FF')
-    ax.yaxis.label.set_color('#F5C7B8FF')
-    ax.title.set_color('#F5C7B8FF')
+    ax.tick_params(colors='#C88D7B')
+    ax.xaxis.label.set_color('#C88D7B')
+    ax.yaxis.label.set_color('#C88D7B')
+    ax.title.set_color('#C88D7B')
     for spine in ax.spines.values():
         spine.set_edgecolor('#2e2e2e')
 
     st.pyplot(fig)
 
-# Sixième ligne : publication date
-empty_col70, main_col71, main_col72, empty_col73 = st.columns([4, 4, 4, 4])  # Colonnes avec marges vides
+# Ligne suivante
+empty_col70, main_col71, main_col72, empty_col73 = st.columns([4, 4, 4, 4])
 
 with main_col71:
-    # Créer les catégories de notes (-2 à 2)
-    story_bins = [-2.5, -1.5, -0.5, 0.5, 1.5, 2.5]  # Pour avoir 5 classes : -2, -1, 0, 1, 2
-    story_labels = [-2, -1, 0, 1, 2]
     df_sents['sounds_cat'] = pd.cut(df_sents['sounds'], bins=story_bins, labels=story_labels)
-
-    # Compter le Votes pour chaque note
     story_counts = df_sents['sounds_cat'].value_counts().sort_index()
 
-    # Tracer l'histogramme
     fig, ax = plt.subplots(figsize=(6, 3))
-    ax.bar(story_counts.index.astype(str), story_counts.values, color='goldenrod', width=0.6)
+    ax.bar(story_counts.index.astype(str), story_counts.values, color='#B8860B', width=0.6)
 
-    # Style
     ax.set_title("Ratings for Music / Sounds", color='black')
-    ax.set_ylabel("Votes", color='goldenrod')
+    ax.set_ylabel("Votes", color='#B8860B')
     ax.set_facecolor(background_color)
     fig.patch.set_facecolor(background_color)
     ax.set_ylim(0, story_counts.values.max() + 5)
-    ax.tick_params(colors='goldenrod')
-    ax.xaxis.label.set_color('goldenrod')
-    ax.yaxis.label.set_color('goldenrod')
-    ax.title.set_color('goldenrod')
+    ax.tick_params(colors='#B8860B')
+    ax.xaxis.label.set_color('#B8860B')
+    ax.yaxis.label.set_color('#B8860B')
+    ax.title.set_color('#B8860B')
     for spine in ax.spines.values():
         spine.set_edgecolor('#2e2e2e')
 
     st.pyplot(fig)
 
 with main_col72:
-    # Créer les catégories de notes (-2 à 2)
-    story_bins = [-2.5, -1.5, -0.5, 0.5, 1.5, 2.5]  # Pour avoir 5 classes : -2, -1, 0, 1, 2
-    story_labels = [-2, -1, 0, 1, 2]
     df_sents['values_cat'] = pd.cut(df_sents['values'], bins=story_bins, labels=story_labels)
-
-    # Compter le Votes pour chaque note
     story_counts = df_sents['values_cat'].value_counts().sort_index()
 
-    # Tracer l'histogramme
     fig, ax = plt.subplots(figsize=(6, 3))
-    ax.bar(story_counts.index.astype(str), story_counts.values, color='darkorchid', width=0.6)
+    ax.bar(story_counts.index.astype(str), story_counts.values, color='#68228B', width=0.6)
 
-    # Style
     ax.set_title("Ratings for Values / Entertainment", color='black')
-    ax.set_ylabel("Votes", color='darkorchid')
+    ax.set_ylabel("Votes", color='#68228B')
     ax.set_facecolor(background_color)
     fig.patch.set_facecolor(background_color)
     ax.set_ylim(0, story_counts.values.max() + 5)
-    ax.tick_params(colors='darkorchid')
-    ax.xaxis.label.set_color('darkorchid')
-    ax.yaxis.label.set_color('darkorchid')
-    ax.title.set_color('darkorchid')
+    ax.tick_params(colors='#68228B')
+    ax.xaxis.label.set_color('#68228B')
+    ax.yaxis.label.set_color('#68228B')
+    ax.title.set_color('#68228B')
     for spine in ax.spines.values():
         spine.set_edgecolor('#2e2e2e')
 
