@@ -4,6 +4,7 @@
 export DB_NAME="MLOps-db"
 export DB_USER="MLOps-user"
 export DB_PASSWORD=$(openssl rand -hex 12)         # Random 24-character hex password
+export DB_ADMIN_USER="admin"
 export DB_ADMIN_PASSWORD=$(openssl rand -hex 12)   # Random 24-character hex password
 
 # Add Helm repo

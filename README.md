@@ -37,12 +37,15 @@ app/
 │   ├── dashboard_service.yaml 
 │   ├── ingress.yaml
 │   └── tracker_deployment.yaml
+├── dev/
+│   ├── db_admin_tools.py
+│   ├── db_tools.py
+│   └── generate_samples.py    
 ├── doc/
 │   └── kubernetes_commands.md    
 ├── logs/
 │   ├── backend.log
 │   └── frontend.log
-├── notebooks/
 ├── pages/
 │   └── dashboard.py
 ├── setup/
