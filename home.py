@@ -30,6 +30,7 @@ def get_random_movies(n=3):
 # Load all movie titles once
 movie_list = get_movie_titles()
 
+
 # -----------------------------
 # 🔎 Search functionality
 # -----------------------------
@@ -45,6 +46,7 @@ if search_query:
                 st.switch_page("pages/dashboard.py")
     else:
         st.warning("No movie found.")
+
 
 # -----------------------------
 # 🎲 Random picks

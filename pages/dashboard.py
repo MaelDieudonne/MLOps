@@ -1,11 +1,12 @@
 import base64
 import matplotlib.pyplot as plt
 import numpy as np
-from PIL import Image
 import os
 import pandas as pd
 import streamlit as st
+
 from io import BytesIO
+from PIL import Image
 from src.utils.db import PostgreSQLDatabase
 from src.utils.logger import setup_logging, get_frontend_logger
 
@@ -33,7 +34,7 @@ with PostgreSQLDatabase() as db:
     logger.info(f"{len(sentiments)} entrées récupérées depuis la table 'reviews_sentiments'.")
 
     # Création du DataFrame sentiments
-    sents_columns = ['id','story', 'acting', 'visuals', 'sounds', 'values', 'overall','date','rating']
+    sents_columns = ['id', 'story', 'acting', 'visuals', 'sounds', 'values', 'overall', 'date', 'rating']
     df_sents = pd.DataFrame(sentiments, columns=sents_columns)
     logger.info(f"DataFrame des sentiments créé avec {df_sents.shape[0]} lignes et {df_sents.shape[1]} colonnes.")
 

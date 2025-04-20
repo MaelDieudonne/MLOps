@@ -160,10 +160,10 @@ Built with Streamlit, the dashboard includes the following features:
 - A detailed movie page showcasing various statistics related to the movie's reviews.
 
 ## 3. Possible improvements
-- Have a better looking dashboard
+- Solve deployment with `argo CD` (maybe by registering credentials in the argo cd secrets instead of a dedicated secret, using `sops` and `helm-secrets` to store encrypted credentials in the repo, or leveraging an external credential manager)
+- Have a better looking dashboard (!)
 - Add an admin interface to the dashboard allowing to monitor the backend (including API costs) and manage users
 - Fully separate the backend and frontend, using an API to communicate between them (with permissions depending on users)
 - Use `playwright` for scraping, which is more flexible than Selenium
-- Solve deployment with `argo CD`
-- Implement more tests
+- Implement more tests to cover a larger portion of the code
 - ...
