@@ -1,6 +1,18 @@
 # The IMDb Reviews Tracker
 This project tracks the reception of movies based on user reviews published on [IMDb](https://www.imdb.com). It was realised during the [Deployment of Data Science Projects](https://www.ensae.fr/courses/6052-mise-en-production-des-projets-de-data-science) course at ENSAE (see the [companion website](https://ensae-reproductibilite.github.io/website/)).
 
+## This branch is about users management
+
+This branch allows user to register themselves in order to access the dashboard, there are several rights such viewer or admin.
+Once logged you can manage your user data such as first and last name or passwords.
+
+If you're logged with an admin account you can do as well modify other users data (but not their password).
+
+Some base credentials are given next for a test account : 
+
+username : rbriggs
+password : def
+
 ## 1. Implementation
 There are 5 main components:
 - ***Dynamic web scraping*** to retrieve reviews dynamically from the IMDb website.
