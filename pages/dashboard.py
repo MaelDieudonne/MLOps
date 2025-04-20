@@ -108,18 +108,11 @@ empty_col20, main_col21, empty_col22, main_col23, empty_col24 = st.columns([3, 5
 
 with main_col21:
     # Section 1 - Image
-    image_path = f"data/covers/{movie_id}.jpg"
-    if os.path.exists(image_path):
-        st.markdown(
-            f"""
-            <div style="display: flex; justify-content: center;">
-                <img src="data/covers/{movie_id}.jpg" width="330">
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-    else:
-        st.warning(f"Cover image not found for {movie_id}.")
+    st.markdown(f"""
+        <div style='text-align: center;'>
+            <img src='data/covers/{movie_id}.jpg' width='330'/>
+        </div>
+    """, unsafe_allow_html=True)
 
 with main_col23:
     # Section 2 - Radar avec les évaluations du film
