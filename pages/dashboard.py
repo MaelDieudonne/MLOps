@@ -33,7 +33,7 @@ with PostgreSQLDatabase() as db:
     logging.info(f"{len(sentiments)} entrées récupérées depuis la table 'reviews_sentiments'.")
 
     # Création du DataFrame sentiments
-    sents_columns = ['id','story', 'acting', 'visuals', 'sounds', 'values', 'overall','date']
+    sents_columns = ['id','story', 'acting', 'visuals', 'sounds', 'values', 'overall','date','rating']
     df_sents = pd.DataFrame(sentiments, columns=sents_columns)
     logging.info(f"DataFrame des sentiments créé avec {df_sents.shape[0]} lignes et {df_sents.shape[1]} colonnes.")
 
@@ -220,7 +220,7 @@ with main_col51:
     df_sents['interval'] = pd.cut(df_sents['date'], bins=bins, include_lowest=True)
 
     # Calculer la moyenne des notes 'overall' pour chaque intervalle
-    grouped = df_sents.groupby('interval')['overall'].mean()
+    grouped = df_sents.groupby('interval')['rating'].mean()
 
     # Tracer l’histogramme
     fig, ax = plt.subplots(figsize=(10, 3))
@@ -256,7 +256,7 @@ empty_col60, main_col61, main_col62, main_col63, empty_col64 = st.columns([2, 4,
 
 with main_col61:
     # Créer les catégories de notes (-2 à 2)
-    story_bins = [-2, -1.5, -0.5, 0.5, 1.5, 2]  # Pour avoir 5 classes : -2, -1, 0, 1, 2
+    story_bins = [-2.5, -1.5, -0.5, 0.5, 1.5, 2.5]  # Pour avoir 5 classes : -2, -1, 0, 1, 2
     story_labels = [-2, -1, 0, 1, 2]
     df_sents['story_cat'] = pd.cut(df_sents['story'], bins=story_bins, labels=story_labels)
 
@@ -284,7 +284,7 @@ with main_col61:
 
 with main_col62:
     # Créer les catégories de notes (-2 à 2)
-    story_bins = [-2, -1.5, -0.5, 0.5, 1.5, 2]  # Pour avoir 5 classes : -2, -1, 0, 1, 2
+    story_bins = [-2.5, -1.5, -0.5, 0.5, 1.5, 2.5]  # Pour avoir 5 classes : -2, -1, 0, 1, 2
     story_labels = [-2, -1, 0, 1, 2]
     df_sents['acting_cat'] = pd.cut(df_sents['acting'], bins=story_bins, labels=story_labels)
 
@@ -312,7 +312,7 @@ with main_col62:
 
 with main_col63:
     # Créer les catégories de notes (-2 à 2)
-    story_bins = [-2, -1.5, -0.5, 0.5, 1.5, 2]  # Pour avoir 5 classes : -2, -1, 0, 1, 2
+    story_bins = [-2.5, -1.5, -0.5, 0.5, 1.5, 2.5]  # Pour avoir 5 classes : -2, -1, 0, 1, 2
     story_labels = [-2, -1, 0, 1, 2]
     df_sents['visuals_cat'] = pd.cut(df_sents['visuals'], bins=story_bins, labels=story_labels)
 
@@ -343,7 +343,7 @@ empty_col70, main_col71, main_col72, empty_col73 = st.columns([4, 4, 4, 4])  # C
 
 with main_col71:
     # Créer les catégories de notes (-2 à 2)
-    story_bins = [-2, -1.5, -0.5, 0.5, 1.5, 2]  # Pour avoir 5 classes : -2, -1, 0, 1, 2
+    story_bins = [-2.5, -1.5, -0.5, 0.5, 1.5, 2.5]  # Pour avoir 5 classes : -2, -1, 0, 1, 2
     story_labels = [-2, -1, 0, 1, 2]
     df_sents['sounds_cat'] = pd.cut(df_sents['sounds'], bins=story_bins, labels=story_labels)
 
@@ -371,7 +371,7 @@ with main_col71:
 
 with main_col72:
     # Créer les catégories de notes (-2 à 2)
-    story_bins = [-2, -1.5, -0.5, 0.5, 1.5, 2]  # Pour avoir 5 classes : -2, -1, 0, 1, 2
+    story_bins = [-2.5, -1.5, -0.5, 0.5, 1.5, 2.5]  # Pour avoir 5 classes : -2, -1, 0, 1, 2
     story_labels = [-2, -1, 0, 1, 2]
     df_sents['values_cat'] = pd.cut(df_sents['values'], bins=story_bins, labels=story_labels)
 

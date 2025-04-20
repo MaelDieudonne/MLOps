@@ -238,7 +238,7 @@ class PostgreSQLDatabase:
         :return: List of rows (as tuples)
         """
         query = f"""
-            SELECT s.review_id, s.story, s.acting, s.visuals, s.sounds, s.values, s.overall, r.date
+            SELECT s.review_id, s.story, s.acting, s.visuals, s.sounds, s.values, s.overall, r.date, r.rating
             FROM reviews_sentiments s
             JOIN reviews_raw r ON s.review_id = r.review_id
             WHERE r.movie_id = '{movie_id}'
