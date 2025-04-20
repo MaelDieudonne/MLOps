@@ -65,7 +65,7 @@ for i, (movie_id, title) in enumerate(random_movies):
             if st.button(f"▶️ Select {title}", key=f"btn_{movie_id}"):
                 with st.spinner("Loading movie..."):
                     st.session_state["selected_movie"] = movie_id
-                    time.sleep(0.5)  # 500 ms de pause pour eviter un flash
+                    time.sleep(2)  # 500 ms de pause pour eviter un flash
                     st.switch_page("pages/dashboard.py")
         else:
             st.warning(f"No cover for {title}")
