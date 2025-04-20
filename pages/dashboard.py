@@ -4,9 +4,8 @@ import numpy as np
 import os
 import pandas as pd
 import streamlit as st
-
 from io import BytesIO
-from src.utils.db import PostgreSQLDatabase
+from src.utils.db import PostgreSQLDatabase, query_movie, query_sents 
 from src.utils.logger import setup_logging, get_frontend_logger
 
 setup_logging()
@@ -21,44 +20,28 @@ movie_id = st.session_state["selected_movie"]
 
 st.set_page_config(layout="wide")
 
-
 with PostgreSQLDatabase() as db:
-    logger.info("Connexion à la base de données PostgreSQL établie.")
+    logging.info("Connexion à la base de données PostgreSQL établie.")
 
-    # Récupération des données du film
-    query = f"""
-        SELECT movie_id, title, release_date
-        FROM movies
-        WHERE movie_id = '{movie_id}'
-    """
-    movie_data = db.query_raw(query)
+    movie_data = db.query_movie(movie_id)
     data_columns = ['movie_id', 'title', 'release_date']
     df_data = pd.DataFrame(movie_data, columns=data_columns)
 
-    logger.info(f"{len(movie_data)} enregistrements récupérés depuis la table 'movies' pour le movie_id '{movie_id}'.")
+    logging.info(f"{len(movie_data)} enregistrements récupérés depuis la table 'movies' pour le movie_id '{movie_id}'.")
 
-    query = f"""
-        SELECT s.review_id, s.story, s.acting, s.visuals, s.sounds, s.values, s.overall, r.date
-        FROM reviews_sentiments s
-        JOIN reviews_raw r ON s.review_id = r.review_id
-        WHERE r.movie_id = '{movie_id}'
-    """
-
-    sentiments = db.query_raw(query)
-    logger.info(f"{len(sentiments)} entrées récupérées depuis la table 'reviews_sentiments'.")
+    sentiments = db.query_sents(movie_id)
+    logging.info(f"{len(sentiments)} entrées récupérées depuis la table 'reviews_sentiments'.")
 
     # Création du DataFrame sentiments
-    sents_columns = ['id', 'story', 'acting', 'visuals', 'sounds', 'values', 'overall', 'date']
+    sents_columns = ['id','story', 'acting', 'visuals', 'sounds', 'values', 'overall','date']
     df_sents = pd.DataFrame(sentiments, columns=sents_columns)
-    logger.info(f"DataFrame des sentiments créé avec {df_sents.shape[0]} lignes et {df_sents.shape[1]} colonnes.")
+    logging.info(f"DataFrame des sentiments créé avec {df_sents.shape[0]} lignes et {df_sents.shape[1]} colonnes.")
 
 cols = ['story', 'acting', 'visuals', 'sounds', 'values', 'overall']
 averages = df_sents[cols].mean(skipna=True).tolist()
-movie_title = movie_data[0][1]
-
+movie_title = movie_data[0][1]  # Le titre du film
 
 background_color = '#DCDCDC'
-
 
 # Ajouter du CSS personnalisé
 st.markdown(f"""

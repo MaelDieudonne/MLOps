@@ -206,6 +206,50 @@ class PostgreSQLDatabase:
             self.connection.rollback()
             logger.error(f"{movie_id + ' - ' if movie_id else ''}Failed deleting data: {e}")
 
+     def query_movie(self, movie_id):
+        """
+        Execute a SQL query and return movie_id, titl and release date
+        
+        :param movie_id: Optional movie ID for logging
+        :return: List of rows (as tuples)
+        """
+        query = f"""
+            SELECT movie_id, title, release_date
+            FROM movies
+            WHERE movie_id = '{movie_id}'
+        """
+        try:
+            self.cursor.execute(query)
+            results = self.cursor.fetchall()
+            logger.debug(f"{movie_id + ' - '}Executed query: {query}")
+            return results
+        except (Exception, psycopg.Error) as error:
+            self.connection.rollback()
+            logger.error(f"{movie_id + ' - '}Failed SQL query: {error}")
+            return []
+
+    def query_sents(self, movie_id):
+        """
+        Execute a raw SQL query and return sentiments analysis results
+        
+        :param movie_id: Optional movie ID for logging
+        :return: List of rows (as tuples)
+        """
+        query = f"""
+            SELECT s.review_id, s.story, s.acting, s.visuals, s.sounds, s.values, s.overall, r.date
+            FROM reviews_sentiments s
+            JOIN reviews_raw r ON s.review_id = r.review_id
+            WHERE r.movie_id = '{movie_id}'
+        """
+        try:
+            self.cursor.execute(query)
+            results = self.cursor.fetchall()
+            logger.debug(f"{movie_id + ' - '}Executed query: {query}")
+            return results
+        except (Exception, psycopg.Error) as error:
+            self.connection.rollback()
+            logger.error(f"{movie_id + ' - '}Failed SQL query: {error}")
+            return []
 
     def query_raw(self, query, movie_id=None):
         """
