@@ -9,8 +9,24 @@ from io import BytesIO
 from src.utils.db import PostgreSQLDatabase
 from src.utils.logger import setup_logging, get_frontend_logger
 
+with open('deployment/user.yaml') as file:
+    config = yaml.load(file, Loader=SafeLoader)
+
+authenticator = stauth.Authenticate(
+    config['credentials'],
+    config['cookie']['name'],
+    config['cookie']['key'],
+    config['cookie']['expiry_days']
+)
+try:
+    authenticator.login()
+except Exception as e:
+    st.error(e)
+
 setup_logging()
 logger = get_frontend_logger()
+
+
 
 if "selected_movie" not in st.session_state:
     st.warning("Please choose a movie first.")
