@@ -163,3 +163,27 @@ class s3:
             logger.info(f"Successfully restored covers from s3")
         except Exception as e:
             logger.error(f"Failed to restore covers from s3: {e}")
+
+
+    def retrieve_cover(self, movie_id, local_folder = 'data/covers/'):
+        """
+        Retrieves a single cover image (movie_id.jpg) from the S3 bucket and copies it to data/covers/ locally.
+        If retrieval fails, creates an empty blank JPEG to avoid display issues.
+        """
+        s3_file = os.path.join(self.destination, 'covers', f"{movie_id}.jpg").replace("\\", "/")
+        os.makedirs(local_folder, exist_ok=True)
+        local_file = os.path.join(local_folder, f"{movie_id}.jpg")
+
+        try:
+            self.fs.get(s3_file, local_file)
+            logger.info(f"Successfully retrieved {s3_file} and saved it to {local_file}")
+        except Exception as e:
+            logger.error(f"Failed to retrieve {s3_file}: {e}")
+
+            try:
+                logger.info(f"Creating an empty JPEG at {local_file}")
+                empty_image = Image.new('RGB', (100, 100), color=(255, 255, 255))
+                empty_image.save(local_file, 'jpg')
+                logger.info(f"Created empty JPEG at {local_file}")
+            except Exception as e:
+                logger.error(f"Failed to create empty JPEG: {e}")
