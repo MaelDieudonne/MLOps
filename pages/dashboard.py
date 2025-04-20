@@ -54,7 +54,7 @@ averages = df_sents[cols].mean(skipna=True).tolist()
 movie_title = movie_data[0][1]
 
 
-backgound_color = '#D3D3D3'
+background_color = '#D3D3D3'
 
 # Ajouter du CSS personnalisé
 st.markdown(f"""
@@ -82,7 +82,7 @@ st.markdown(f"""
 
         /* Style de fond du dashboard */
         .main .block-container {{
-            background-color: {backgound_color};
+            background-color: {background_color};
         }}
     </style>
 """, unsafe_allow_html=True)
