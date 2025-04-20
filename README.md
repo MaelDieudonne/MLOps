@@ -144,23 +144,15 @@ Such a task is called **aspect-base sentiment analysis**. It is a seriously diff
 The only workable solution is to offload sentiment analysis to a **generative LLM**. A cursory experimentation proved that this works well with an adequate prompt. However, it requires very large models, that cannot be run locally but must be called through APIs. The current implementation relies on gpt-4o-mini from OpenAI, which is inexpensive ($0.15 / M tokens) but rather slow. An alternative would be to use Gemini from Google, which has a free tier, albeit with rates limits and requiring an API key as well.
 
 ### API
-A minimal implementation, primarily intended as a proof of concept. In the DataLab, tt can be launched and accessed from the terminal with:
+A minimal implementation, primarily intended as a proof of concept. In the DataLab, it can be launched and accessed from the terminal with:
 - `poetry run uvicorn src.api:app --reload`
 - `curl http://127.0.0.1:8000/movies/tt0029583` (for instance)
 
-### Dashboard
-With Streamlit. Includes...
-- Header presenting the movie + time since last scraping
-- Total number of reviews + graph of their publication date
-- Average grade + graph of its evolution over time
-- For each sentiment + overall sentiment: average score + histogram
-- The possibility to add or remove movies
-- ...
-
-### User management?
-*To have different clients able to track different movies from the same database, with a logging interface to the dashboard.*
-
-*=> Integrated to streamlit? With an admin console to track users?*
+### Dashboard and user management
+Built with Streamlit, the dashboard includes the following features:
+- A landing page for user login and authentication.
+- A movie selection page where users can choose a movie to display and add movies to their watchlist.
+- A detailed movie page showcasing various statistics related to the movie's reviews.
 
 ## 3. Possible improvements
 - Have a better looking dashboard
