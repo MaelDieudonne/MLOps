@@ -5,7 +5,7 @@ import pandas as pd
 import streamlit_authenticator as stauth
 from scipy.interpolate import CubicSpline
 from scipy.signal import savgol_filter
-from src.utils.db import PostgreSQLDatabase
+from  src.utils.db import PostgreSQLDatabase
 import time
 import subprocess
 from concurrent.futures import ThreadPoolExecutor
@@ -40,6 +40,8 @@ if not st.session_state.get("authentication_status"):
         name_of_registered_user = authenticator.register_user()
         if email_of_registered_user:
             st.success('User registered successfully')
+            with open('user.yaml', 'w') as file:
+                yaml.dump(config, file, default_flow_style=False, allow_unicode=True)
     except Exception as e:
         st.error(e)
     try:
@@ -67,7 +69,34 @@ if st.session_state.get("authentication_status"):
         st.sidebar.write("You have admin privileges.")
         # Placeholder for admin functions
         if st.sidebar.button("Manage users"):
-            st.write("🔧 Feature: Modify user rights - Coming soon!")
+            st.session_state['manage_users_mode'] = True
+
+        if st.session_state.get("manage_users_mode", False) and "admin" in roles:
+            st.subheader("👥 User Role Management")
+
+            usernames = list(config['credentials']['usernames'].keys())
+            selected_user = st.selectbox("Select a user to manage", usernames)
+
+            if selected_user:
+                user_data = config['credentials']['usernames'][selected_user]
+                current_roles = user_data.get('roles', [])
+
+                st.markdown(f"**User:** {user_data['first_name']} {user_data['last_name']}  \n**Email:** {user_data['email']}")
+
+                role_options = ['admin', 'editor', 'viewer']
+                updated_roles = st.multiselect("Assign Roles", role_options, default=current_roles)
+
+                if st.button("Save Changes"):
+                    config['credentials']['usernames'][selected_user]['roles'] = updated_roles
+                    try:
+                        with open('user.yaml', 'w') as file:
+                            yaml.dump(config, file, default_flow_style=False, allow_unicode=True)
+                        st.success(f"Roles updated for {selected_user}: {', '.join(updated_roles)}")
+                    except Exception as e:
+                        st.error(f"Failed to save changes: {e}")
+
+            if st.button("Close User Management"):
+                st.session_state['manage_users_mode'] = False
 
     # === Your dashboard code goes here ===
     # It will only run for authenticated users.
@@ -104,9 +133,6 @@ if st.session_state.get("authentication_status"):
                     st.session_state['update_user_details_mode'] = False
             except Exception as e:
                 st.sidebar.error(f"Error: {e}")
-    if st.sidebar.button("Logout"):
-        authenticator.logout()
-        st.experimental_rerun()
 
 else:
     if st.session_state.get("authentication_status") is False:
@@ -114,9 +140,6 @@ else:
     elif st.session_state.get("authentication_status") is None:
         st.warning("Please enter your username and password")
       
-if st.session_state.get("authentication_status"):
-    setup_logging()
-logger = get_frontend_logger()
 
 if "selected_movie" not in st.session_state:
     st.warning("Please choose a movie first.")
