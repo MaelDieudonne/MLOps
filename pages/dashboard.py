@@ -5,7 +5,7 @@ import os
 import pandas as pd
 import streamlit as st
 from io import BytesIO
-from src.utils.db import PostgreSQLDatabase, query_movie, query_sents 
+from src.utils.db import PostgreSQLDatabase
 from src.utils.logger import setup_logging, get_frontend_logger
 
 setup_logging()
