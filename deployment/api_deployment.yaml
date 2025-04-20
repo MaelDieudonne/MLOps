@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: movie-reviews-api
-        image: maeldieudonne/mlops:testap54
+        image: maeldieudonne/mlops:testap55
         ports:
         - containerPort: 8001
         command: ["uvicorn"]

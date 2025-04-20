@@ -214,14 +214,17 @@ with main_col51:
     # S'assurer que la colonne date est bien en datetime
     df_sents['date'] = pd.to_datetime(df_sents['date'])
 
+    # Supprimer les lignes où 'rating' est NaN
+    df_valid = df_sents.dropna(subset=['rating'])
+
     # Créer 20 intervalles temporels équidistants
-    bins = pd.date_range(start=df_sents['date'].min(), end=df_sents['date'].max(), periods=21)
+    bins = pd.date_range(start=df_valid['date'].min(), end=df_valid['date'].max(), periods=21)
 
     # Découper les dates en intervalles
-    df_sents['interval'] = pd.cut(df_sents['date'], bins=bins, include_lowest=True)
+    df_valid['interval'] = pd.cut(df_valid['date'], bins=bins, include_lowest=True)
 
-    # Calculer la moyenne des notes 'overall' pour chaque intervalle
-    grouped = df_sents.groupby('interval')['rating'].mean()
+    # Calculer la moyenne des notes 'rating' pour chaque intervalle
+    grouped = df_valid.groupby('interval')['rating'].mean()
 
     # Tracer l’histogramme
     fig, ax = plt.subplots(figsize=(10, 3))
@@ -251,6 +254,7 @@ with main_col51:
         spine.set_edgecolor('#2e2e2e')
 
     st.pyplot(fig)
+
 
 # Sixième ligne : publication date
 empty_col60, main_col61, main_col62, main_col63, empty_col64 = st.columns([1, 4, 4, 4, 1])  # Colonnes avec marges vides

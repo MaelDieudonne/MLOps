@@ -1,6 +1,7 @@
 import os
 import random
 import streamlit as st
+import time
 
 from PIL import Image
 from src.utils.db import PostgreSQLDatabase
@@ -62,7 +63,9 @@ for i, (movie_id, title) in enumerate(random_movies):
             img = Image.open(cover_path)
             st.image(img, caption=title, use_container_width=True)
             if st.button(f"▶️ Select {title}", key=f"btn_{movie_id}"):
-                st.session_state["selected_movie"] = movie_id
-                st.switch_page("pages/dashboard.py")
+                with st.spinner("Loading movie..."):
+                    st.session_state["selected_movie"] = movie_id
+                    time.sleep(0.5)  # 500 ms de pause pour eviter un flash
+                    st.switch_page("pages/dashboard.py")
         else:
             st.warning(f"No cover for {title}")
