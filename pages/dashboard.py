@@ -11,7 +11,6 @@ from src.utils.logger import setup_logging, get_frontend_logger
 setup_logging()
 logger = get_frontend_logger()
 
-
 if "selected_movie" not in st.session_state:
     st.warning("Please choose a movie first.")
     st.stop()
@@ -21,21 +20,21 @@ movie_id = st.session_state["selected_movie"]
 st.set_page_config(layout="wide")
 
 with PostgreSQLDatabase() as db:
-    logging.info("Connexion à la base de données PostgreSQL établie.")
+    logger.info("Connexion à la base de données PostgreSQL établie.")
 
     movie_data = db.query_movie(movie_id)
     data_columns = ['movie_id', 'title', 'release_date']
     df_data = pd.DataFrame(movie_data, columns=data_columns)
 
-    logging.info(f"{len(movie_data)} enregistrements récupérés depuis la table 'movies' pour le movie_id '{movie_id}'.")
+    logger.info(f"{len(movie_data)} enregistrements récupérés depuis la table 'movies' pour le movie_id '{movie_id}'.")
 
     sentiments = db.query_sents(movie_id)
-    logging.info(f"{len(sentiments)} entrées récupérées depuis la table 'reviews_sentiments'.")
+    logger.info(f"{len(sentiments)} entrées récupérées depuis la table 'reviews_sentiments'.")
 
     # Création du DataFrame sentiments
     sents_columns = ['id','story', 'acting', 'visuals', 'sounds', 'values', 'overall','date','rating']
     df_sents = pd.DataFrame(sentiments, columns=sents_columns)
-    logging.info(f"DataFrame des sentiments créé avec {df_sents.shape[0]} lignes et {df_sents.shape[1]} colonnes.")
+    logger.info(f"DataFrame des sentiments créé avec {df_sents.shape[0]} lignes et {df_sents.shape[1]} colonnes.")
 
 cols = ['story', 'acting', 'visuals', 'sounds', 'values', 'overall']
 averages = df_sents[cols].mean(skipna=True).tolist()
