@@ -3,11 +3,11 @@ This project tracks the reception of movies based on user reviews published on [
 
 ## :wrench: Implementation
 There are 5 main components:
-- ***Dynamic web scraping*** to retrieve reviews dynamically from the IMDb website.
-- ***Aspect-based sentiment analysis*** to extract information from the reviews.
-- ***API*** to broadcoast the data.
-- ***Dashboard*** to present synthetic information on each movie.
-- ***User management system*** to mirror a professional environment.
+- **Dynamic web scraping** to retrieve reviews dynamically from the IMDb website.
+- **Aspect-based sentiment analysis** to extract information from the reviews.
+- **API** to broadcoast the data.
+- **Dashboard** to present synthetic information on each movie.
+- **User management system** to mirror a professional environment.
 
 The dashboard can be accessed [here](https://movie-reviews-tracker.lab.sspcloud.fr/) and the API [there](https://api-movie-reviews-tracker.lab.sspcloud.fr/).
 
@@ -156,11 +156,15 @@ Built with Streamlit, the dashboard includes the following features:
 - A movie selection page where users can choose a movie to display and add movies to their watchlist.
 - A detailed movie page showcasing various statistics related to the movie's reviews.
 
+:warning: *The user management system is functional but has not yet been tested extensively enough to be considered production-ready.
+Related development is hosted in the users branch, and the corresponding dashboard can be accessed [here](https://test-movie-reviews-tracker.lab.sspcloud.fr/).*
+
 ## :bulb: Possible improvements
-- Solve deployment with `argo CD` (the problem being to generate the credentials dynamically for the database, and to pass them to the other pods; only the `OPENAI_API_KEY` must be retrieved externally)
-- Have a better looking dashboard (!)
-- Add an admin interface to the dashboard allowing to monitor the backend (including API costs) and manage users
-- Fully separate the backend and frontend, using an API to communicate between them (with permissions depending on users)
-- Use `playwright` for scraping, which is more flexible than Selenium
-- Implement more tests to cover a larger portion of the code
+- Solve deployment with `argo CD` (the problem being to generate the credentials dynamically for the database, and to pass them to the other pods; only the `OPENAI_API_KEY` must be retrieved externally).
+- Have a better looking dashboard :see_no_evil: making better use of available information (e.g., upvotes and downvotes).
+- Offer the possibility to add and remove movies from the dashboard.
+- Add an admin interface to the dashboard allowing to monitor the backend (including API costs) and manage users.
+- Fully separate the backend and frontend, using an API to communicate between them (with permissions depending on users).
+- Use `playwright` for scraping, which is more flexible than Selenium.
+- Implement broader tests to cover the code more extensively (although anything related to the database cannot be automated in GitHub, the PostgreSQL service being inaccessible from outside the DataLab).
 - ...

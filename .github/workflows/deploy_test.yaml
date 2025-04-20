@@ -1,4 +1,4 @@
-name: Build and Deploy Docker Container
+name: Build and Deploy Docker Container for Development
 
 on:
   push:
