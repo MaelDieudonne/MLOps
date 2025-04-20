@@ -124,8 +124,8 @@ with main_col23:
     fig, ax = plt.subplots(figsize=(6, 6), subplot_kw=dict(polar=True))
 
     # Appliquer le même fond que les autres graphiques
-    ax.set_facecolor(backgound_color)  # Fond du graphique radar
-    fig.patch.set_facecolor(backgound_color)  # Fond autour du graphique
+    ax.set_facecolor(background_color)  # Fond du graphique radar
+    fig.patch.set_facecolor(background_color)  # Fond autour du graphique
 
     ax.plot(angles, notes, 'o-', linewidth=2, color='blue')
     ax.fill(angles, notes, alpha=0.25, color='blue')
@@ -188,8 +188,8 @@ with main_col41:
     # Tracer l'histogramme
     fig, ax = plt.subplots(figsize=(10, 3))
     ax.bar(range(len(hist_data)), hist_data.values, color='white')
-    ax.set_facecolor(backgound_color)
-    fig.patch.set_facecolor(backgound_color)
+    ax.set_facecolor(background_color)
+    fig.patch.set_facecolor(background_color)
     ax.set_xticks(range(len(hist_data)))
     ax.set_xticklabels([str(interval.left.date()) for interval in hist_data.index], rotation=45, ha='right', color='white')
     ax.set_title("Number of published reviews", color='white')
@@ -233,8 +233,8 @@ with main_col51:
 
     # Style du graphique
     ax.set_title("Average rating per time periods", color='white')
-    ax.set_facecolor(backgound_color)
-    fig.patch.set_facecolor(backgound_color)
+    ax.set_facecolor(background_color)
+    fig.patch.set_facecolor(background_color)
     ax.tick_params(colors='white')
     ax.xaxis.label.set_color('white')
     ax.yaxis.label.set_color('white')
@@ -266,8 +266,8 @@ with main_col61:
     # Style
     ax.set_title("Ratings for Narrative / Storyline", color='white')
     ax.set_ylabel("Votes", color='white')
-    ax.set_facecolor(backgound_color)
-    fig.patch.set_facecolor(backgound_color)
+    ax.set_facecolor(background_color)
+    fig.patch.set_facecolor(background_color)
     ax.set_ylim(0, story_counts.values.max() + 5)
     ax.tick_params(colors='white')
     ax.xaxis.label.set_color('white')
@@ -294,8 +294,8 @@ with main_col62:
     # Style
     ax.set_title("Ratings for Acting / Performance", color='white')
     ax.set_ylabel("Votes", color='white')
-    ax.set_facecolor(backgound_color)
-    fig.patch.set_facecolor(backgound_color)
+    ax.set_facecolor(background_color)
+    fig.patch.set_facecolor(background_color)
     ax.set_ylim(0, story_counts.values.max() + 5)
     ax.tick_params(colors='white')
     ax.xaxis.label.set_color('white')
@@ -322,8 +322,8 @@ with main_col63:
     # Style
     ax.set_title("Ratings for Visuals / Cinematography", color='white')
     ax.set_ylabel("Votes", color='white')
-    ax.set_facecolor(backgound_color)
-    fig.patch.set_facecolor(backgound_color)
+    ax.set_facecolor(background_color)
+    fig.patch.set_facecolor(background_color)
     ax.set_ylim(0, story_counts.values.max() + 5)
     ax.tick_params(colors='white')
     ax.xaxis.label.set_color('white')
@@ -353,8 +353,8 @@ with main_col71:
     # Style
     ax.set_title("Ratings for Music / Sounds", color='white')
     ax.set_ylabel("Votes", color='white')
-    ax.set_facecolor(backgound_color)
-    fig.patch.set_facecolor(backgound_color)
+    ax.set_facecolor(background_color)
+    fig.patch.set_facecolor(background_color)
     ax.set_ylim(0, story_counts.values.max() + 5)
     ax.tick_params(colors='white')
     ax.xaxis.label.set_color('white')
@@ -381,8 +381,8 @@ with main_col72:
     # Style
     ax.set_title("Ratings for Values / Entertainment", color='white')
     ax.set_ylabel("Votes", color='white')
-    ax.set_facecolor(backgound_color)
-    fig.patch.set_facecolor(backgound_color)
+    ax.set_facecolor(background_color)
+    fig.patch.set_facecolor(background_color)
     ax.set_ylim(0, story_counts.values.max() + 5)
     ax.tick_params(colors='white')
     ax.xaxis.label.set_color('white')
