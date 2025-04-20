@@ -1,7 +1,7 @@
-# The IMDb Reviews Tracker :clapper:
+# :film_frames: The IMDb Reviews Tracker :star:
 This project tracks the reception of movies based on user reviews published on [IMDb](https://www.imdb.com). It was realised during the [Deployment of Data Science Projects](https://www.ensae.fr/courses/6052-mise-en-production-des-projets-de-data-science) course at ENSAE (see the [companion website](https://ensae-reproductibilite.github.io/website/)).
 
-## 1. Implementation
+## :wrench: Implementation
 There are 5 main components:
 - ***Dynamic web scraping*** to retrieve reviews dynamically from the IMDb website.
 - ***Aspect-based sentiment analysis*** to extract information from the reviews.
@@ -11,7 +11,7 @@ There are 5 main components:
 
 The dashboard can be accessed [here](https://movie-reviews-tracker.lab.sspcloud.fr/) and the API [there](https://api-movie-reviews-tracker.lab.sspcloud.fr/).
 
-Checklist:
+:clipboard: Checklist:
 - This project is hosted on GitHub, and development has been organized in separate branches.
 - The code has been formatted with `Flake8` and cleaned with `vulture`.
 - The credentials are managed securely through the DataLab Vault or an `.env` file.
@@ -24,7 +24,7 @@ Checklist:
 - Deployment is straightforward on Kubernetes.
 - Deployment is possible (but non-operational regarding credentials) through Argo CD.
 
-Architecture:
+:brick: Architecture:
 <pre>
 app/
 ├── data/
@@ -75,8 +75,8 @@ app/
 ├── main.py
 └── scheduler.py</pre>
 
-## Installation
-### In the DataLab (for developpement)
+## :package: Installation
+### :butterfly: In the DataLab (for developpement)
 Launch a Postgresql service, then store the corresponding parameters in an `.env` file or the Datalab Vault:
 - `DB_NAME`
 - `DB_USER`
@@ -89,7 +89,7 @@ Launch the installation script with `chmod +x ./setup/install_dependencies.sh &&
 3. Sets up the database (with `setup/db_init.py`)
 4. Launches the scheduler to scrap and analyze reviews on a hourly basis (its state can be checked with `pgrep -fl scheduler.py`)
 
-### With Kubernetes (for production)
+### :wheel_of_dharma: With Kubernetes (for production)
 - Store the `OPENAI_API_KEY` in an `.env` file or the Datalab.
 - Launch a Jupyter or VSCode service **with edit rights** (and **access to the vault** if the `OPENAI_API_KEY` is stored there).
 - Run `chmod +x ./setup/create_db.sh && source ./setup/create_db.sh` to launch a PostgrelSQL pod with random passwords.
@@ -99,14 +99,14 @@ Launch the installation script with `chmod +x ./setup/install_dependencies.sh &&
   - For the API
   - For the dashboard
 
-### With Docker (for enjoyment)
+### :whale: With Docker (for enjoyment)
 A `docker-compose.yml` is provided which runs the tracker, the dashboard, the API, and the database as distinct services. The secrets must be set as environment variables, including parameters for the backup on S3 which can be retrieved [here](https://datalab.sspcloud.fr/account/storage). Then with some luck, everything should run...
 
-### Manage movies
+### :popcorn: Manage movies
 They can be added or removed from the terminal with `poetry run python -m src.manage_movies --add '<movie_id_1>' '<movie_id_2>' --remove '<movie_id_3>'` (where `<movie_id>` must be retrieved manually from IMDb, e.g., `tt0033467` for [Citizen Kane](https://www.imdb.com/title/tt0033467/?ref_=fn_all_ttl_1)).
 
-## 2. Technical aspects
-### Data management
+## :nut_and_bolt: Technical aspects
+### :floppy_disk: Data management
 Data is stored in a PostgreSQL database with 3 tables:
 - `movies` contains movie metadata,
 - `reviews_raws` contains reviews as scraped,
@@ -116,7 +116,7 @@ These tables are backed-up as `.parquet` in the DataLab with s3.
 
 A sample with 4 movies is provided.
 
-### Scraping
+### :spider: Scraping
 Data must be collected from three IMDB pages:
 - The movie’s main page for metadata, including the total number of reviews.
 - The main reviews page, which shows the 25 most popular reviews by default; some reviews are hidden behind `<spoiler>` tags, and vote counts over 999 are rounded.
@@ -136,7 +136,7 @@ The scraping process follows these steps:
 
 A scheduler launches one script per movie every hour, ensuring no more than five movies are scraped concurrently to avoid overloading the system. The database is also backed up hourly. For some movies, small discrepancies were observed between the number of reviews listed on the main page and the number actually scraped from the reviews page. A cursory investigation found no clear explanation. 
 
-### Sentiment analysis
+### :performing_arts: Sentiment analysis
 We want to determine the opinions expressed in the reviews regarding 5 main features of the movies:
 - *Storytelling* (including characters and their development, narrative progression, plot twists, screenplay, dialogues, overall pacing)
 - *Acting performance* (including vocal, musical, danse, or stunt work if applicable)
@@ -148,18 +148,18 @@ Such a task is called **aspect-base sentiment analysis**. It is a seriously diff
 
 The only workable solution is to offload sentiment analysis to a **generative LLM**. A cursory experimentation proved that this works well with an adequate prompt. However, it requires very large models, that cannot be run locally but must be called through APIs. The current implementation relies on gpt-4o-mini from OpenAI, which is inexpensive ($0.15 / M tokens) but rather slow. An alternative would be to use Gemini from Google, which has a free tier, albeit with rates limits and requiring an API key as well.
 
-### API
+### :satellite_antenna: API
 A minimal implementation, primarily intended as a proof of concept. In the DataLab, it can be launched and accessed from the terminal with:
 - `poetry run uvicorn src.api:app --reload`
 - `curl http://127.0.0.1:8000/movies/tt0029583` (for instance)
 
-### Dashboard and user management
+### :bar_chart: Dashboard and user management
 Built with Streamlit, the dashboard includes the following features:
 - A landing page for user login and authentication.
 - A movie selection page where users can choose a movie to display and add movies to their watchlist.
 - A detailed movie page showcasing various statistics related to the movie's reviews.
 
-## 3. Possible improvements
+## :bulb: Possible improvements
 - Solve deployment with `argo CD` (the problem being to generate the credentials dynamically for the database, and to pass them to the other pods; only the `OPENAI_API_KEY` must be retrieved externally)
 - Have a better looking dashboard (!)
 - Add an admin interface to the dashboard allowing to monitor the backend (including API costs) and manage users
