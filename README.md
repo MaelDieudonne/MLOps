@@ -22,6 +22,7 @@ Checklist:
 - Tests are available and integrated into a GitHub workflow.
 - The application is containerized with Docker through another GitHub workflow.
 - Deployment is straightforward on Kubernetes.
+- Deployment is possible (but non-operational regarding credentials) through Argo CD.
 
 Architecture:
 <pre>
@@ -31,12 +32,16 @@ app/
 │   ├── covers/    
 │   └── sample/
 ├── deployment/
-│   ├── api_deployment.yaml
-│   ├── api_service.yaml
-│   ├── dashboard_deployment.yaml
-│   ├── dashboard_service.yaml 
-│   ├── ingress.yaml
-│   └── tracker_deployment.yaml
+│   ├── deployment
+│   │   ├── api.yaml
+│   │   ├── dashboard.yaml
+│   │   └── tracker.yaml
+│   ├── service
+│   │   ├── api.yaml
+│   │   └── dashboard.yaml
+│   ├── ingress
+│   │   └── ingress.yaml
+│   └── argo_cd.yaml
 ├── dev/
 │   ├── db_admin_tools.py
 │   ├── db_tools.py
@@ -66,7 +71,7 @@ app/
 ├── test/
 │       ├── backup_test.py
 │       └── connection_test.py
-├── homz.py
+├── home.py
 ├── main.py
 └── scheduler.py</pre>
 
@@ -89,7 +94,7 @@ Launch the installation script with `chmod +x ./setup/install_dependencies.sh &&
 - Launch a Jupyter or VSCode service **with edit rights** (and **access to the vault** if the `OPENAI_API_KEY` is stored there).
 - Run `chmod +x ./setup/create_db.sh && source ./setup/create_db.sh` to launch a PostgrelSQL pod with random passwords.
 - Run `chmod +x ./setup/create_kubectl_secrets.sh && source ./setup/create_kubectl_secrets.sh` to register the credentials in the Kubernetes environment.
-- Run `kubectl apply -f deployment/` to deploy 3 separate pods:
+- Run `kubectl apply -R -f deployment/` to deploy 3 separate pods:
   - For scraping and analyzing reviews
   - For the API
   - For the dashboard
@@ -159,6 +164,6 @@ Built with Streamlit, the dashboard includes the following features:
 - Add an admin interface to the dashboard allowing to monitor the backend (including API costs) and manage users
 - Fully separate the backend and frontend, using an API to communicate between them (with permissions depending on users)
 - Use `playwright` for scraping, which is more flexible than Selenium
-- Automate deployment with `argo CD`
+- Solve deployment with `argo CD`
 - Implement more tests
 - ...

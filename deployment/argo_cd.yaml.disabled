@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: ensae-mlops
+  name: movie-reviews-tracker
 spec:
   project: default
   source:
