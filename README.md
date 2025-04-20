@@ -1,4 +1,4 @@
-# :film_frames: The IMDb Reviews Tracker :star:
+# :clapper: The IMDb Reviews Tracker :star:
 This project tracks the reception of movies based on user reviews published on [IMDb](https://www.imdb.com). It was realised during the [Deployment of Data Science Projects](https://www.ensae.fr/courses/6052-mise-en-production-des-projets-de-data-science) course at ENSAE (see the [companion website](https://ensae-reproductibilite.github.io/website/)).
 
 ## :wrench: Implementation
@@ -24,7 +24,7 @@ The dashboard can be accessed [here](https://movie-reviews-tracker.lab.sspcloud.
 - Deployment is straightforward on Kubernetes.
 - Deployment is possible (but non-operational regarding credentials) through Argo CD.
 
-:brick: Architecture:
+:building_construction: Architecture:
 <pre>
 app/
 ├── data/
@@ -148,7 +148,7 @@ Such a task is called **aspect-base sentiment analysis**. It is a seriously diff
 
 The only workable solution is to offload sentiment analysis to a **generative LLM**. A cursory experimentation proved that this works well with an adequate prompt. However, it requires very large models, that cannot be run locally but must be called through APIs. The current implementation relies on gpt-4o-mini from OpenAI, which is inexpensive ($0.15 / M tokens) but rather slow. An alternative would be to use Gemini from Google, which has a free tier, albeit with rates limits and requiring an API key as well.
 
-### :satellite_antenna: API
+### :satellite: API
 A minimal implementation, primarily intended as a proof of concept. In the DataLab, it can be launched and accessed from the terminal with:
 - `poetry run uvicorn src.api:app --reload`
 - `curl http://127.0.0.1:8000/movies/tt0029583` (for instance)
