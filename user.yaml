@@ -1,0 +1,37 @@
+api_key: 4oxqyoyu2ozu4at54pyrmik7h4qznkae
+cookie:
+  expiry_days: 30
+  key: nathan# To be filled with any string
+  name: julia# To be filled with any string
+credentials:
+  usernames:
+    jsmith:
+      email: jsmith@gmail.com
+      failed_login_attempts: 0
+      first_name: gerard
+      last_name: Smith
+      logged_in: false
+      password: $2b$12$FmUrNHjKnkbm8eiqLWt38eZYTKeZCHMeuVCP8VnurHKiAijMe7TsO
+      roles:
+      - admin
+      - editor
+      - viewer
+    rbriggs:
+      email: rbriggs@gmail.com
+      failed_login_attempts: 0
+      first_name: Rebecca
+      last_name: Briggs
+      logged_in: false
+      password: $2b$12$kNeJ47XyLbV8pKTa3hE6vO2utE4lXpnlonlxV74z01NSrXjWiL0Te
+      roles:
+      - viewer
+oauth2:
+  google:
+    client_id: null
+    client_secret: null
+    redirect_uri: null
+  microsoft:
+    client_id: null
+    client_secret: null
+    redirect_uri: null
+    tenant_id: null
