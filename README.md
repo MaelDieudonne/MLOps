@@ -109,7 +109,7 @@ Data is stored in a PostgreSQL database with 3 tables:
 
 These tables are backed-up as `.parquet` in the DataLab with s3. 
 
-A sample with 2 movies is provided.
+A sample with 4 movies is provided.
 
 ### Scraping
 Data must be collected from three IMDB pages:
