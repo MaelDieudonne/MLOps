@@ -160,7 +160,7 @@ Built with Streamlit, the dashboard includes the following features:
 - A detailed movie page showcasing various statistics related to the movie's reviews.
 
 ## 3. Possible improvements
-- Solve deployment with `argo CD` (maybe by registering credentials in the argo cd secrets instead of a dedicated secret, using `sops` and `helm-secrets` to store encrypted credentials in the repo, or leveraging an external credential manager)
+- Solve deployment with `argo CD` (the problem being to generate the credentials dynamically for the database, and to pass them to the other pods; only the `OPENAI_API_KEY` must be retrieved externally)
 - Have a better looking dashboard (!)
 - Add an admin interface to the dashboard allowing to monitor the backend (including API costs) and manage users
 - Fully separate the backend and frontend, using an API to communicate between them (with permissions depending on users)
