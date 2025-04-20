@@ -77,7 +77,7 @@ st.markdown(f"""
 
 # Ajout de marges vides de chaque côté
 # Première ligne : colonnes vides et titre, nb reviews
-empty_col10, main_col11, empty_col12, main_col13, empty_col14 = st.columns([3, 3, 6, 3, 3])  # Colonnes avec marges vides
+empty_col10, main_col11, empty_col12, main_col13, empty_col14 = st.columns([3, 3, 4, 3, 3])  # Colonnes avec marges vides
 
 with main_col11:
     st.markdown(f"<h1 style='text-align: center;'>{movie_title}</h1>", unsafe_allow_html=True)
@@ -87,7 +87,7 @@ with main_col13:
     st.markdown(f"<h2 style='text-align: center;'>{review_count} reviews</h2>", unsafe_allow_html=True)
 
 # Deuxième ligne : image et radar
-empty_col20, main_col21, empty_col22, main_col23, empty_col24 = st.columns([3, 5, 1, 5, 3])  # Colonnes avec marges vides
+empty_col20, main_col21, empty_col22, main_col23, empty_col24 = st.columns([2, 5, 1, 5, 2])  # Colonnes avec marges vides
 
 with main_col21:
     # Section 1 - Image
@@ -165,7 +165,7 @@ with main_col23:
     )
 
 # Troisième ligne : release date et rating
-empty_col30, main_col31, empty_col32, main_col33, empty_col34 = st.columns([2, 3, 4, 3, 2])  # Colonnes avec marges vides
+empty_col30, main_col31, empty_col32, main_col33, empty_col34 = st.columns([1, 3, 2, 3, 1])  # Colonnes avec marges vides
 
 with main_col31:
     # st.title(f"Release date: {pd.to_datetime(df_data['release_date'].iloc[0]).strftime('%Y-%m-%d')}")
@@ -178,7 +178,7 @@ with main_col33:
     st.markdown(f"<h2 style='text-align: center;'>Average rating {avg_rating}</h2>", unsafe_allow_html=True)
 
 # Quatrième ligne : publication date
-empty_col40, main_col41, empty_col42 = st.columns([2, 7, 2])  # Colonnes avec marges vides
+empty_col40, main_col41, empty_col42 = st.columns([1, 7, 1])  # Colonnes avec marges vides
 
 with main_col41:
     # Créer les 20 intervalles de temps
@@ -208,7 +208,7 @@ with main_col41:
     st.pyplot(fig)
 
 # Cinquième ligne : publication date
-empty_col50, main_col51, empty_col52 = st.columns([2, 7, 2])  # Colonnes avec marges vides
+empty_col50, main_col51, empty_col52 = st.columns([1, 7, 1])  # Colonnes avec marges vides
 
 with main_col51:
     # S'assurer que la colonne date est bien en datetime
@@ -253,7 +253,7 @@ with main_col51:
     st.pyplot(fig)
 
 # Sixième ligne : publication date
-empty_col60, main_col61, main_col62, main_col63, empty_col64 = st.columns([2, 4, 4, 4, 2])  # Colonnes avec marges vides
+empty_col60, main_col61, main_col62, main_col63, empty_col64 = st.columns([1, 4, 4, 4, 1])  # Colonnes avec marges vides
 
 with main_col61:
     story_bins = [-2.5, -1.5, -0.5, 0.5, 1.5, 2.5]
@@ -321,7 +321,7 @@ with main_col63:
     st.pyplot(fig)
 
 # Ligne suivante
-empty_col70, main_col71, main_col72, empty_col73 = st.columns([4, 4, 4, 4])
+empty_col70, main_col71, main_col72, empty_col73 = st.columns([3, 4, 4, 3])
 
 with main_col71:
     df_sents['sounds_cat'] = pd.cut(df_sents['sounds'], bins=story_bins, labels=story_labels)

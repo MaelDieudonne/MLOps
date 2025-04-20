@@ -22,7 +22,6 @@ def get_movie_titles():
         result = db.query_raw("SELECT movie_id, title FROM movies")
         return result
 
-@st.cache_data
 def get_random_movies(n=3):
     movie_list = get_movie_titles()
     return random.sample(movie_list, k=min(n, len(movie_list)))
