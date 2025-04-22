@@ -89,7 +89,7 @@ Launch the installation script with `chmod +x ./setup/install_dependencies.sh &&
 3. Sets up the database (with `setup/db_init.py`)
 4. Launches the scheduler to scrap and analyze reviews on a hourly basis (its state can be checked with `pgrep -fl scheduler.py`)
 
-### :wheel-of-dharma: With Kubernetes (for production)
+### :wheel_of_dharma: With Kubernetes (for production)
 - Store the `OPENAI_API_KEY` in an `.env` file or the Datalab.
 - Launch a Jupyter or VSCode service **with edit rights** (and **access to the vault** if the `OPENAI_API_KEY` is stored there).
 - Run `chmod +x ./setup/create_db.sh && source ./setup/create_db.sh` to launch a PostgrelSQL pod with random passwords.
