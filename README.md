@@ -18,7 +18,7 @@ The dashboard can be accessed [here](https://movie-reviews-tracker.lab.sspcloud.
 - The code is fully functionalized, modularized, and structured.
 - The environment is managed with `poetry` and various install scripts.
 - Detailed logs are collected.
-- Data is stored externaly on a PostgreSQL database, with with backups as Parquet files on S3.
+- Data is stored externaly on a PostgreSQL database, with backups as Parquet files on S3.
 - Tests are available and integrated into a GitHub workflow.
 - The application is containerized with Docker through another GitHub workflow.
 - Deployment is straightforward on Kubernetes.
