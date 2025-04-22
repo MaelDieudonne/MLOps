@@ -114,7 +114,7 @@ These tables are backed-up as `.parquet` in the DataLab with s3.
 A sample with 4 movies is provided.
 
 ### :spider: Scraping
-Data must be collected from three IMDB pages:
+Data must be collected from 3 IMDb pages:
 - The movie’s main page for metadata, including the total number of reviews.
 - The main reviews page, which shows the 25 most popular reviews by default; some reviews are hidden behind `<spoiler>` tags, and vote counts over 999 are rounded.
 - Individual review pages, where exact vote counts are displayed.
@@ -161,7 +161,7 @@ Related development is hosted in the users branch, and the corresponding dashboa
 
 ## :bulb: Possible improvements
 - Solve deployment with `argo CD` (the problem being to generate the credentials dynamically for the database, and to pass them to the other pods; only the `OPENAI_API_KEY` must be retrieved externally).
-- Have a better looking dashboard :see_no_evil: making better use of available information (e.g., upvotes and downvotes).
+- Have a better looking dashboard :see_no_evil: making full use of available information (e.g., upvotes and downvotes).
 - Offer the possibility to add and remove movies from the dashboard.
 - Add an admin interface to the dashboard allowing to monitor the backend (including API costs) and manage users.
 - Fully separate the backend and frontend, using an API to communicate between them (with permissions depending on users).
