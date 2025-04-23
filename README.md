@@ -160,7 +160,7 @@ Built with Streamlit, the dashboard includes the following features:
 Related development is hosted in the users branch, and the corresponding dashboard can be accessed [here](https://test-movie-reviews-tracker.lab.sspcloud.fr/).*
 
 ## :bulb: Possible improvements
-- Solve deployment with `argo CD` (the problem being to generate the credentials dynamically for the database, and to pass them to the other pods; only the `OPENAI_API_KEY` must be retrieved externally).
+- Solve deployment with `argo CD` (the problem being to generate the credentials dynamically for the database, and to pass them to the other pods; only the `OPENAI_API_KEY` and s3 credentials must be retrieved externally).
 - Have a better looking dashboard :see_no_evil: making full use of available information (e.g., upvotes and downvotes).
 - Offer the possibility to add and remove movies from the dashboard.
 - Add an admin interface to the dashboard allowing to monitor the backend (including API costs) and manage users.
